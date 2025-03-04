@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+    <TextView
+        android:id="@+id/txtDN"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="ĐĂNG NHẬP"
+        android:layout_gravity="center"
+        android:textSize="39dp"
+        android:textColor="@android:color/holo_blue_dark"/>
+    <TextView
+        android:id="@+id/txtemail"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Nhập thông tin email"
+        android:textSize="19dp"
+        android:textColor="@android:color/holo_blue_dark" />
+
+    <EditText
+        android:id="@+id/edtEmail"
+        android:layout_width="match_parent"
+        android:background="@drawable/boder"
+        android:layout_height="48dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="15dp"/>
+    <TextView
+        android:id="@+id/txtpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Nhập thông tin mật khẩu"
+        android:textSize="19dp"
+        android:textColor="@android:color/holo_blue_dark" />
+    <EditText
+        android:id="@+id/edtPassword"
+        android:background="@drawable/boder"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+
+        android:hint="Mật khẩu"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="15dp"
+        android:inputType="textPassword" />
+    <TextView
+        android:id="@+id/txtForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Quên mật khẩu?"
+        android:layout_gravity="right"
+        android:textColor="@android:color/holo_blue_dark" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="372dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/boder"
+        android:text="Đăng nhập"
+        android:shadowColor="@android:color/holo_blue_dark"/>
+
+
+</LinearLayout>
+

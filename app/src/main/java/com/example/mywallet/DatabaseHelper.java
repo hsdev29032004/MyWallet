@@ -6,10 +6,14 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "finance_manager.db";
+    private static final String DATABASE_NAME = "finance_managers.db";
     private static final int DATABASE_VERSION = 1;
 
     // Bảng User
@@ -106,7 +110,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createCategoryTable);
         db.execSQL(createTransactionTable);
         db.execSQL(createBudgetTable);
-        db.execSQL("INSERT INTO User (email,password) VALUES('thoa@gmail.com','thoa17@')");
+        /*db.execSQL("INSERT INTO User (email,password) VALUES('thoa@gmail.com','thoa17@')");
+        db.execSQL("INSERT INTO User (email,password) VALUES('maianh@gmail.com','thoa12@')");
+        db.execSQL("INSERT INTO Account (account_id,name,balance,isDeleted) VALUES(1,'Ngân hàng Vietcombank',12000000,0)");
+        db.execSQL("INSERT INTO Category (name,type,isDeleted) VALUES('Ăn uống','Chi',0)");
+        db.execSQL("INSERT INTO Category (name,type,isDeleted) VALUES('Xăng xe','Chi',0)");*/
     }
 
     @Override
@@ -132,7 +140,141 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db=this.getReadableDatabase();
         Cursor cursor=db.rawQuery("SELECT * FROM User where email=? AND password=?", new String[]{email,password});
         boolean exists =cursor.getCount()>0;
+        while (cursor.moveToNext()) {
+            String dbEmail = cursor.getString(0);
+            String dbPassword = cursor.getString(1);
+            Log.d("DB_CHECK", "Email: " + dbEmail + ", Password: " + dbPassword);
+        }
         cursor.close();
         return exists;
     }
+    public boolean insertTransaction(int userId, int accountId, int categoryId, double amount, String type, String date, String note) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("user_id", userId);
+        values.put("account_id", accountId);
+        values.put("category_id", categoryId);
+        values.put("amount", amount);
+        values.put("transaction_type", type);
+        values.put("date", date);
+        values.put("note", note);
+
+        long result = db.insert("Transactions", null, values);
+        db.close();
+        return result != -1;
+    }
+
+
+    // Hàm lấy ID của danh mục từ tên danh mục
+    private int getCategoryId(String categoryName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + COLUMN_CATEGORY_ID + " FROM " + TABLE_CATEGORY + " WHERE " + COLUMN_CATEGORY_NAME + "=?", new String[]{categoryName});
+        if (cursor.moveToFirst()) {
+            int id = cursor.getInt(0);
+            cursor.close();
+            return id;
+        }
+        cursor.close();
+        return -1; // Trả về -1 nếu không tìm thấy
+    }
+    public List<String> getAllCategories() {
+        List<String> categories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT name FROM Category WHERE isDeleted = 0", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                categories.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return categories;
+    }
+    public int getCategoryIdByName(String name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT category_id FROM Category WHERE name = ?", new String[]{name});
+        int id = -1;
+        if (cursor.moveToFirst()) {
+            id = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return id;
+    }
+
+    public int getAccountIdByName(String name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT account_id FROM Account WHERE name = ?", new String[]{name});
+        int id = -1;
+        if (cursor.moveToFirst()) {
+            id = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return id;
+    }
+
+    public List<String> getAllBudgets() {
+        List<String> budgets = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT name FROM Account WHERE isDeleted = 0", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                budgets.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return budgets;
+    }
+
+    public void checkDatabase() {
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        try {
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery("SELECT * FROM User", null);
+
+            if (cursor != null && cursor.getCount() == 0) {
+                Log.e("DatabaseCheck", "Bảng User không có dữ liệu!");
+            } else if (cursor != null) {
+                // Kiểm tra xem các cột có tồn tại trong bảng hay không
+                int emailColumnIndex = cursor.getColumnIndex(COLUMN_EMAIL);
+                int passwordColumnIndex = cursor.getColumnIndex(COLUMN_PASSWORD);
+
+                if (emailColumnIndex == -1 || passwordColumnIndex == -1) {
+                    Log.e("DatabaseCheckError", "Một hoặc nhiều cột không tồn tại trong bảng User");
+                } else {
+                    // Di chuyển con trỏ đến các dòng dữ liệu
+                    while (cursor.moveToNext()) {
+                        String email = cursor.getString(emailColumnIndex);
+                        String password = cursor.getString(passwordColumnIndex);
+                        Log.i("DatabaseCheck", "Dữ liệu trong User - Email: " + email + ", Password: " + password);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseCheckError", "Lỗi khi truy vấn cơ sở dữ liệu: " + e.getMessage());
+        } finally {
+            if (cursor != null) cursor.close();
+            if (db != null) db.close();
+        }
+    }
+    public int getUserIdByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT user_id FROM User WHERE email = ?", new String[]{email});
+        int userId = -1;
+        if (cursor.moveToFirst()) {
+            userId = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return userId;
+    }
+
+
+
 }

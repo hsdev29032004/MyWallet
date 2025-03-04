@@ -8,54 +8,26 @@
     tools:context=".MainActivity"
     android:id="@+id/main">
 
-
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="370dp"
-            android:layout_gravity="center"
-            android:layout_height="48dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/boder"
-            android:text="   Tổng số dư: 0 VND"
-            android:textColor="#2196F3"
-            android:textDirection="firstStrong"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="26dp"
-            android:text="Lịch sử ghi chép >>"
-            android:textColor="#2196F3"
-            android:textSize="20sp" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="59dp"
-            android:layout_height="57dp"
-            android:layout_gravity="start"
-            android:contentDescription="Thêm hạn mức"
-            app:srcCompat="@drawable/add" />
-
-    </LinearLayout>
+        android:layout_weight="1"/>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="59dp"
+        android:layout_height="57dp"
+        android:layout_gravity="start"
+        android:contentDescription="Thêm hạn mức"
+        app:srcCompat="@drawable/add" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="118dp"
-        app:menu="@menu/bottom_nav_menu"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:labelVisibilityMode="labeled"
         android:background="#2196F3"
-        />
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
 
 </LinearLayout>
