@@ -7,6 +7,11 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.mywallet.Models.Account;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "finance_manager.db";
@@ -107,6 +112,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createTransactionTable);
         db.execSQL(createBudgetTable);
         db.execSQL("INSERT INTO User (email,password) VALUES('thoa@gmail.com','thoa17@')");
+
+        db.execSQL("INSERT INTO Account (user_id, name, balance, isDeleted) VALUES (1, 'Tiền mặt', 50000000, 0)");
+        db.execSQL("INSERT INTO Account (user_id, name, balance, isDeleted) VALUES (1, 'Vietcombank', 10000000, 0)");
+        db.execSQL("INSERT INTO Account (user_id, name, balance, isDeleted) VALUES (1, 'Momo', 20000000, 0)");
     }
 
     @Override
@@ -134,5 +143,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean exists =cursor.getCount()>0;
         cursor.close();
         return exists;
+    }
+
+    public List<Account> getAllAccounts() {
+        List<Account> accountList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query("accounts", null, null, null, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                double balance = cursor.getDouble(cursor.getColumnIndexOrThrow("balance"));
+
+                Account account = new Account(id, name, balance);
+                accountList.add(account);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return accountList;
+    }
+
+    public List<Account> getAccountsByUserId(int userId) {
+        List<Account> accountList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT account_id, name, balance FROM Account WHERE user_id = ? AND isDeleted = 0";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int accountId = cursor.getInt(0);
+                String accountName = cursor.getString(1);
+                double balance = cursor.getDouble(2);
+
+                Account account = new Account(accountId, accountName, balance);
+                accountList.add(account);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return accountList;
     }
 }
