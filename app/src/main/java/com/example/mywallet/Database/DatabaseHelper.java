@@ -1,9 +1,8 @@
-package com.example.mywallet;
+package com.example.mywallet.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -188,5 +187,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.close();
         return accountList;
+    }
+
+    public long insertAccount(Account account) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_id", 1);
+        values.put("name", account.getName());
+        values.put("balance", account.getBalance());
+        values.put("isDeleted", 0);
+
+        long result = db.insert("Account", null, values);
+        db.close();
+        return result;
     }
 }

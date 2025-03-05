@@ -1,4 +1,4 @@
-package com.example.mywallet;
+package com.example.mywallet.Activities;
 
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
@@ -7,6 +7,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+
+import com.example.mywallet.Fragments.AccountFragment;
+import com.example.mywallet.Fragments.HistoryFragment;
+import com.example.mywallet.Fragments.HomeFragment;
+import com.example.mywallet.Fragments.ProfileFragment;
+import com.example.mywallet.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
