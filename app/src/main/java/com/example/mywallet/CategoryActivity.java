@@ -14,13 +14,15 @@ import com.example.mywallet.Adapters.CategoryAdapter;
 import com.example.mywallet.Models.Category;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CategoryActivity extends AppCompatActivity {
 
-    GridView gvCategory;
     TabHost tabCategory;
     CategoryAdapter adapterCategory;
     ArrayList<Category> listCategory;
+
+    DatabaseHelper dbHelper;
 
     //Dữ liệu thử
     int iconCategory = R.drawable.account;
@@ -41,38 +43,48 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void addControl() {
         //ánh xạ id
-    gvCategory = findViewById(R.id.gvCategory);
-    tabCategory = findViewById(R.id.tabCategory);
+        GridView gvCategoryThu = findViewById(R.id.gvCategoryThu);
+        GridView gvCategoryChi = findViewById(R.id.gvCategoryChi);
+        tabCategory = findViewById(R.id.tabCategory);
 
-    //Thêm dữ liệu vào list
-    listCategory = new ArrayList<>();
-    for(int i=0; i<9;i++){
-        listCategory.add(new Category(iconCategory, nameCategory + " "+i));
-    }
+        dbHelper = new DatabaseHelper(this);
+        List<Category> listCategoryThu = dbHelper.getCategoriesByType("Thu");
+        List<Category> listCategoryChi = dbHelper.getCategoriesByType("Chi");
 
-    //Sử dụng adapter
-    adapterCategory= new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, listCategory);
-    gvCategory.setAdapter(adapterCategory);
+
+        //Thêm dữ liệu vào list
+        int defaultIcon = R.drawable.account; //icon mặc định
+        while (listCategoryThu.size() < 9) {
+            listCategoryThu.add(new Category(0, defaultIcon, "Chưa chọn", "Thu"));
+        }
+        while (listCategoryChi.size() < 9) {
+            listCategoryChi.add(new Category(0, defaultIcon, "Chưa chọn", "Chi"));
+        }
+
+
+        //Sử dụng adapter
+        CategoryAdapter adapterThu = new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, new ArrayList<>(listCategoryThu));
+        CategoryAdapter adapterChi = new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, new ArrayList<>(listCategoryChi));
+
+        gvCategoryThu.setAdapter(adapterThu);
+        gvCategoryChi.setAdapter(adapterChi);
 
     //Xử lý tab host
         tabCategory = findViewById(R.id.tabCategory);
         tabCategory.setup();
 
-        //Khai báo tab con
-        TabHost.TabSpec spec1, spec2;
+        TabHost.TabSpec specChi = tabCategory.newTabSpec("tabChi");
+        specChi.setContent(R.id.tab1);
+        specChi.setIndicator("Chi");
+        tabCategory.addTab(specChi);
 
-        //Ứng với mỗi tab con
-        //Tab 1
-        spec1 = tabCategory.newTabSpec("tab1");
-        spec1.setContent(R.id.tab1);
-        spec1.setIndicator("Thu");
-        tabCategory.addTab(spec1);
+        TabHost.TabSpec specThu = tabCategory.newTabSpec("tabThu");
+        specThu.setContent(R.id.tab2);
+        specThu.setIndicator("Thu");
+        tabCategory.addTab(specThu);
 
-        //Tab 1
-        spec2 = tabCategory.newTabSpec("tab2");
-        spec2.setContent(R.id.tab2);
-        spec2.setIndicator("Chi");
-        tabCategory.addTab(spec2);
+
+
 
 
     }
