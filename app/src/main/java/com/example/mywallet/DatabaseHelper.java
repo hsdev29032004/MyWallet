@@ -3,6 +3,7 @@ package com.example.mywallet;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,14 +12,20 @@ import android.util.Log;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import android.content.SharedPreferences;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     private static final String DATABASE_NAME = "finance_managers.db";
     private static final int DATABASE_VERSION = 1;
+    private Context context;
+
+
 
 
     // Bảng User
@@ -215,6 +222,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return categories;
     }
+    public int getUserId(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        int userId = sharedPreferences.getInt("USER_ID", -1); // Đúng key đã lưu
+        Log.d("DB_USER", "User ID lấy được: " + userId);
+        return userId;
+    }
+
+
+    public List<Map<String, String>> getTransactionsForCurrentUser(Context context) {
+        List<Map<String, String>> transactions = new ArrayList<>();
+        int user_id = getUserId(context);
+
+        if (user_id == -1) {
+            Log.d("DB_QUERY", "Không có user đăng nhập.");
+            return transactions; // Không có user đăng nhập
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT t.account_id, c.name, t.amount, t.transaction_type, t.date, t.due_date, t.note " +
+                "FROM Transactions t " +
+                "JOIN Category c ON t.category_id = c.category_id " + // JOIN để lấy tên danh mục
+                "WHERE t.user_id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(user_id)});
+        Log.d("DB_QUERY", "Số giao dịch lấy được: " + cursor.getCount());
+
+        if (cursor.moveToFirst()) {
+            do {
+                Map<String, String> transaction = new HashMap<>();
+                transaction.put("category_name", cursor.getString(1)); // Tên danh mục
+                transaction.put("amount", cursor.getString(2)); // Số tiền
+                transaction.put("transaction_type", cursor.getString(3)); // Loại giao dịch
+                transaction.put("date", cursor.getString(4)); // Ngày giao dịch
+                transaction.put("due_date", cursor.getString(5)); // Hạn thanh toán
+                transaction.put("note", cursor.getString(6)); // Ghi chú
+                Log.d("DB_QUERY", "Giao dịch: " + transaction.toString());
+
+                transactions.add(transaction);
+            } while (cursor.moveToNext());
+        } else {
+            Log.d("DB_QUERY", "Không có giao dịch nào trong database.");
+        }
+
+        cursor.close();
+        db.close();
+        return transactions;
+    }
+
+
+
+
     public int getCategoryIdByName(String name) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT category_id FROM Category WHERE name = ?", new String[]{name});
