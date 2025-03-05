@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.mywallet.Models.Account;
+import com.example.mywallet.Models.Category;
+import com.example.mywallet.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "finance_manager.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Bảng User
     private static final String TABLE_USER = "User";
@@ -115,6 +117,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO Account (user_id, name, balance, isDeleted) VALUES (1, 'Tiền mặt', 50000000, 0)");
         db.execSQL("INSERT INTO Account (user_id, name, balance, isDeleted) VALUES (1, 'Vietcombank', 10000000, 0)");
         db.execSQL("INSERT INTO Account (user_id, name, balance, isDeleted) VALUES (1, 'Momo', 20000000, 0)");
+
+
+        //Thêm danh mục
+        db.execSQL("INSERT INTO Category (name, type) VALUES ('Ăn uống', 'Chi')");
+        db.execSQL("INSERT INTO Category (name, type) VALUES ('Mua sắm', 'Chi')");
+        db.execSQL("INSERT INTO Category (name, type) VALUES ('Giải trí', 'Chi')");
+        db.execSQL("INSERT INTO Category (name, type) VALUES ('Tiền lương', 'Thu')");
+        db.execSQL("INSERT INTO Category (name, type) VALUES ('Tiền thưởng', 'Thu')");
+        db.execSQL("INSERT INTO Category (name, type) VALUES ('Tiền cấp', 'Thu')");
+
     }
 
     @Override
@@ -187,6 +199,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.close();
         return accountList;
+    }
+
+    //Lấy danh mục theo loại
+    public List<Category> getCategoriesByType(String type) {
+        List<Category> categoryList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_CATEGORY + " WHERE "
+                + COLUMN_CATEGORY_TYPE + " = ? AND " + COLUMN_CATEGORY_IS_DELETED + " = 0";
+        Cursor cursor = db.rawQuery(query, new String[]{type});
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_NAME));
+                String catType = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_TYPE));
+                // Set lại id của icon mặc định
+                int icon = R.drawable.account;
+                Category category = new Category(id, icon, name, catType);
+                categoryList.add(category);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        db.close();
+        return categoryList;
     }
 
     public long insertAccount(Account account) {
