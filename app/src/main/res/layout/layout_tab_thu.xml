@@ -6,11 +6,11 @@
     <GridView
         android:id="@+id/gvCategoryThu"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
         android:numColumns="3"
         android:paddingTop="20dp"
-        android:horizontalSpacing="10dp"
-        android:verticalSpacing="30dp"
         android:stretchMode="columnWidth"
-        android:gravity="center"/>
+        android:verticalSpacing="30dp" />
 </LinearLayout>
