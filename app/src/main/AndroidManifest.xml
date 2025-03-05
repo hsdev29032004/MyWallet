@@ -13,13 +13,19 @@
         android:theme="@style/Theme.MyWallet"
         tools:targetApi="31">
         <activity
+            android:name=".HistoryFragment"
+            android:exported="false" />
+        <activity
+            android:name=".AccountFragment"
+            android:exported="false" />
+        <activity
+            android:name=".HomeFragment"
+            android:exported="false" />
+        <activity
             android:name=".Transaction"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AccountFragment"
             android:exported="false" />
         <activity
             android:name=".Login"

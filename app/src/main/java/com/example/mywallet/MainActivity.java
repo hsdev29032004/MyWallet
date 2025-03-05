@@ -1,10 +1,12 @@
 package com.example.mywallet;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +16,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+
 public class MainActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ImageView imageView;
+
 
         imageView=findViewById(R.id.imageView);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         // Áp dụng padding cho status bar
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -41,13 +47,16 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+
         // Mặc định hiển thị HomeFragment khi mở app
         loadFragment(new HomeFragment());
+
 
         // Xử lý sự kiện click cho BottomNavigation
         BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
+
 
             if (itemId == R.id.nav_home) {
                 loadFragment(new HomeFragment());
@@ -63,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
     }
+
 
     // Hàm load Fragment vào container
     private void loadFragment(Fragment fragment) {
