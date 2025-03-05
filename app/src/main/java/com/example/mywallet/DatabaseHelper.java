@@ -1,5 +1,6 @@
 package com.example.mywallet;
 
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,13 +9,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class DatabaseHelper extends SQLiteOpenHelper {
+
 
     private static final String DATABASE_NAME = "finance_managers.db";
     private static final int DATABASE_VERSION = 1;
+
 
     // Bảng User
     private static final String TABLE_USER = "User";
@@ -24,6 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_FULL_NAME = "full_name";
     private static final String COLUMN_TOKEN = "token";
 
+
     // Bảng Account
     private static final String TABLE_ACCOUNT = "Account";
     private static final String COLUMN_ACCOUNT_ID = "account_id";
@@ -31,12 +37,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_BALANCE = "balance";
     private static final String COLUMN_IS_DELETED = "isDeleted";
 
+
     // Bảng Category
     private static final String TABLE_CATEGORY = "Category";
     private static final String COLUMN_CATEGORY_ID = "category_id";
     private static final String COLUMN_CATEGORY_NAME = "name";
     private static final String COLUMN_CATEGORY_TYPE = "type";
     private static final String COLUMN_CATEGORY_IS_DELETED = "isDeleted";
+
 
     // Bảng Transaction (Đổi tên để tránh lỗi từ khóa SQLite)
     private static final String TABLE_TRANSACTION = "Transactions";
@@ -47,6 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_DUE_DATE = "due_date";
     private static final String COLUMN_NOTE = "note";
 
+
     // Bảng Budget
     private static final String TABLE_BUDGET = "Budget";
     private static final String COLUMN_BUDGET_ID = "budget_id";
@@ -54,9 +63,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_START_DATE = "start_date";
     private static final String COLUMN_END_DATE = "end_date";
 
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -67,6 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_FULL_NAME + " TEXT, "
                 + COLUMN_TOKEN + " TEXT)";
 
+
         String createAccountTable = "CREATE TABLE " + TABLE_ACCOUNT + " ("
                 + COLUMN_ACCOUNT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_USER_ID + " INTEGER, "
@@ -75,11 +87,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_IS_DELETED + " INTEGER DEFAULT 0, "
                 + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_USER_ID + "))";
 
+
         String createCategoryTable = "CREATE TABLE " + TABLE_CATEGORY + " ("
                 + COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_CATEGORY_NAME + " TEXT, "
                 + COLUMN_CATEGORY_TYPE + " TEXT, "
                 + COLUMN_CATEGORY_IS_DELETED + " INTEGER DEFAULT 0)";
+
 
         String createTransactionTable = "CREATE TABLE " + TABLE_TRANSACTION + " ("
                 + COLUMN_TRANSACTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -95,6 +109,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + COLUMN_ACCOUNT_ID + ") REFERENCES " + TABLE_ACCOUNT + "(" + COLUMN_ACCOUNT_ID + "), "
                 + "FOREIGN KEY(" + COLUMN_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORY + "(" + COLUMN_CATEGORY_ID + "))";
 
+
         String createBudgetTable = "CREATE TABLE " + TABLE_BUDGET + " ("
                 + COLUMN_BUDGET_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_USER_ID + " INTEGER, "
@@ -105,17 +120,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_USER_ID + "), "
                 + "FOREIGN KEY(" + COLUMN_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORY + "(" + COLUMN_CATEGORY_ID + "))";
 
+
         db.execSQL(createUserTable);
         db.execSQL(createAccountTable);
         db.execSQL(createCategoryTable);
         db.execSQL(createTransactionTable);
         db.execSQL(createBudgetTable);
-        /*db.execSQL("INSERT INTO User (email,password) VALUES('thoa@gmail.com','thoa17@')");
-        db.execSQL("INSERT INTO User (email,password) VALUES('maianh@gmail.com','thoa12@')");
-        db.execSQL("INSERT INTO Account (account_id,name,balance,isDeleted) VALUES(1,'Ngân hàng Vietcombank',12000000,0)");
-        db.execSQL("INSERT INTO Category (name,type,isDeleted) VALUES('Ăn uống','Chi',0)");
-        db.execSQL("INSERT INTO Category (name,type,isDeleted) VALUES('Xăng xe','Chi',0)");*/
+       /*db.execSQL("INSERT INTO User (email,password) VALUES('thoa@gmail.com','thoa17@')");
+       db.execSQL("INSERT INTO User (email,password) VALUES('maianh@gmail.com','thoa12@')");
+       db.execSQL("INSERT INTO Account (account_id,name,balance,isDeleted) VALUES(1,'Ngân hàng Vietcombank',12000000,0)");
+       db.execSQL("INSERT INTO Category (name,type,isDeleted) VALUES('Ăn uống','Chi',0)");
+       db.execSQL("INSERT INTO Category (name,type,isDeleted) VALUES('Xăng xe','Chi',0)");*/
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -131,6 +148,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values=new ContentValues();
         values.put("email", email);
         values.put("password", password);
+
 
         long result= db. insert("User", null, values);
         return result!=-1;
@@ -152,6 +170,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
+
         values.put("user_id", userId);
         values.put("account_id", accountId);
         values.put("category_id", categoryId);
@@ -160,10 +179,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("date", date);
         values.put("note", note);
 
+
         long result = db.insert("Transactions", null, values);
         db.close();
         return result != -1;
     }
+
+
 
 
     // Hàm lấy ID của danh mục từ tên danh mục
@@ -182,6 +204,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT name FROM Category WHERE isDeleted = 0", null);
+
 
         if (cursor.moveToFirst()) {
             do {
@@ -204,6 +227,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+
     public int getAccountIdByName(String name) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT account_id FROM Account WHERE name = ?", new String[]{name});
@@ -216,10 +240,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+
     public List<String> getAllBudgets() {
         List<String> budgets = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT name FROM Account WHERE isDeleted = 0", null);
+
 
         if (cursor.moveToFirst()) {
             do {
@@ -231,6 +257,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return budgets;
     }
 
+
     public void checkDatabase() {
         SQLiteDatabase db = null;
         Cursor cursor = null;
@@ -238,12 +265,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db = this.getReadableDatabase();
             cursor = db.rawQuery("SELECT * FROM User", null);
 
+
             if (cursor != null && cursor.getCount() == 0) {
                 Log.e("DatabaseCheck", "Bảng User không có dữ liệu!");
             } else if (cursor != null) {
                 // Kiểm tra xem các cột có tồn tại trong bảng hay không
                 int emailColumnIndex = cursor.getColumnIndex(COLUMN_EMAIL);
                 int passwordColumnIndex = cursor.getColumnIndex(COLUMN_PASSWORD);
+
 
                 if (emailColumnIndex == -1 || passwordColumnIndex == -1) {
                     Log.e("DatabaseCheckError", "Một hoặc nhiều cột không tồn tại trong bảng User");
@@ -274,6 +303,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return userId;
     }
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 package com.example.mywallet;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,13 +10,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+
 public class Login extends AppCompatActivity {
+
 
     EditText edtEmail, edtPassword;
     TextView txtForgotPassword;
@@ -25,7 +29,10 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         // Kiểm tra cơ sở dữ liệu
+
+
 
 
         setContentView(R.layout.activity_login);  // Đảm bảo sử dụng layout đúng
@@ -39,6 +46,9 @@ public class Login extends AppCompatActivity {
 
 
 
+
+
+
         //xu ly su kien dang nhap
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,13 +57,17 @@ public class Login extends AppCompatActivity {
                 String password = edtPassword.getText().toString();
 
 
+
+
                 if (email.isEmpty() || password.isEmpty()){
                     Toast.makeText(Login.this,"Vui long nhap thong tin email va mat khau", Toast.LENGTH_SHORT).show();
+
 
                 }else{
                     boolean isValid=database.checkUser(email,password);
                     if(isValid){
                         int userId = database.getUserIdByEmail(email); // Lấy userId từ email
+
 
                         // Lưu userId vào SharedPreferences
                         SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
@@ -61,13 +75,16 @@ public class Login extends AppCompatActivity {
                         editor.putInt("USER_ID", userId);
                         editor.apply();
 
+
                         Toast.makeText(Login.this,"Đăng nhập thành công",Toast.LENGTH_SHORT).show();
                         Intent intent=new Intent(Login.this, MainActivity.class);
                         startActivity(intent);
 
+
                     }else {
                         Toast.makeText(Login.this,"Sai tên đăng nhập hoặc mật khẩu",Toast.LENGTH_SHORT).show();
                     }
+
 
                 }
             }

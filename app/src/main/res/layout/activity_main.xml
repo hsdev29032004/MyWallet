@@ -8,6 +8,7 @@
     tools:context=".MainActivity"
     android:id="@+id/main">
 
+
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
@@ -21,6 +22,7 @@
         android:contentDescription="Thêm hạn mức"
         app:srcCompat="@drawable/add" />
 
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -29,5 +31,6 @@
         android:background="#2196F3"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />
+
 
 </LinearLayout>

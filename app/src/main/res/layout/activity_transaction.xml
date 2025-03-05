@@ -10,12 +10,15 @@
     android:background="#CCFFFF">
 
 
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
         >
+
 
         <TextView
             android:id="@+id/textView"
@@ -29,6 +32,7 @@
             android:textDirection="firstStrong"
             android:textSize="24sp"
             android:textStyle="bold" />
+
 
         <TextView
             android:id="@+id/textView2"
@@ -44,8 +48,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
 
+
             android:padding="16dp"
             android:background="@drawable/boder">
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -55,6 +61,7 @@
                 android:textStyle="bold"
                 android:gravity="center"/>
 
+
             <EditText
                 android:id="@+id/edtAmount"
                 android:layout_width="match_parent"
@@ -63,11 +70,13 @@
                 android:inputType="numberDecimal"
                 android:padding="10dp"/>
 
+
             <Spinner
                 android:id="@+id/spnCategory"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:prompt="@string/choose_category_prompt"/>
+
 
             <EditText
                 android:id="@+id/edtNote"
@@ -76,6 +85,7 @@
                 android:hint="Ghi chú"
                 android:padding="10dp"/>
 
+
             <Button
                 android:id="@+id/btnDate"
                 android:layout_width="match_parent"
@@ -83,11 +93,13 @@
                 android:text="Chọn ngày"
                 android:padding="10dp"/>
 
+
             <Spinner
                 android:id="@+id/spnPaymentMethod"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:prompt="@string/choose_payment_method_prompt"/>
+
 
             <Button
                 android:id="@+id/btnCreate"
@@ -98,7 +110,10 @@
         </LinearLayout>
 
 
+
+
     </LinearLayout>
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
@@ -109,5 +124,6 @@
         app:labelVisibilityMode="labeled"
         android:background="#2196F3"
         />
+
 
 </LinearLayout>

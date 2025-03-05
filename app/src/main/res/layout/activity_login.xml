@@ -28,6 +28,7 @@
         android:textSize="19dp"
         android:textColor="@android:color/holo_blue_dark" />
 
+
     <EditText
         android:id="@+id/edtEmail"
         android:layout_width="match_parent"
@@ -54,6 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
 
+
         android:hint="Mật khẩu"
         android:layout_marginTop="0dp"
         android:layout_marginBottom="15dp"
@@ -68,6 +70,7 @@
         android:layout_gravity="right"
         android:textColor="@android:color/holo_blue_dark" />
 
+
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="372dp"
@@ -77,5 +80,6 @@
         android:shadowColor="@android:color/holo_blue_dark"/>
 
 
-</LinearLayout>
 
+
+</LinearLayout>
