@@ -42,6 +42,11 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
         return accountList.size();
     }
 
+    public void updateData(List<Account> accountList) {
+        this.accountList = accountList;
+        notifyDataSetChanged();
+    }
+
     public static class AccountViewHolder extends RecyclerView.ViewHolder {
         TextView txtAccountName, txtBalance;
 

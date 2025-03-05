@@ -1,4 +1,4 @@
-package com.example.mywallet;
+package com.example.mywallet.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.mywallet.Adapters.CategoryAdapter;
+import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.Models.Category;
+import com.example.mywallet.R;
 
 import java.util.ArrayList;
 import java.util.List;

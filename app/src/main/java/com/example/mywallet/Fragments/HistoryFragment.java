@@ -1,10 +1,12 @@
-package com.example.mywallet;
+package com.example.mywallet.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
+
+import com.example.mywallet.R;
 
 public class HistoryFragment extends Fragment {
 
