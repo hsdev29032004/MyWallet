@@ -1,5 +1,6 @@
 package com.example.mywallet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +25,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Mặc định hiển thị HomeFragment khi mở app
+        Intent intent = new Intent(MainActivity.this, CategoryActivity.class);
+        startActivity(intent);
+
+        /*// Mặc định hiển thị HomeFragment khi mở app
         loadFragment(new HomeFragment());
 
         // Xử lý sự kiện click cho BottomNavigation
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
             return true;
-        });
+        });*/
     }
 
     // Hàm load Fragment vào container
