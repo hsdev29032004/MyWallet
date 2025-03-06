@@ -1,12 +1,18 @@
 package com.example.mywallet.Adapters;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.Models.Account;
 import com.example.mywallet.R;
 
@@ -16,9 +22,13 @@ import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountViewHolder> {
     private List<Account> accountList;
+    private Context context;
+    private DatabaseHelper dbHelper;
 
-    public AccountAdapter(List<Account> accountList) {
+    public AccountAdapter(Context context, List<Account> accountList) {
+        this.context = context;
         this.accountList = (accountList != null) ? accountList : new ArrayList<>();
+        this.dbHelper = new DatabaseHelper(context);
     }
 
     @NonNull
@@ -35,6 +45,8 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
         String formattedBalance = decimalFormat.format(account.getBalance());
         holder.txtBalance.setText(formattedBalance + " VND");
+
+        holder.btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog(account, position));
     }
 
     @Override
@@ -47,13 +59,35 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
         notifyDataSetChanged();
     }
 
+    private void showDeleteConfirmationDialog(Account account, int position) {
+        new AlertDialog.Builder(context)
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc chắn muốn xóa tài khoản \"" + account.getName() + "\" không?")
+                .setPositiveButton("Xóa", (dialog, which) -> deleteAccount(account, position))
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void deleteAccount(Account account, int position) {
+        boolean deleted = dbHelper.deleteAccount(account.getId());
+        if (deleted) {
+            accountList.remove(position);
+            notifyItemRemoved(position);
+            Toast.makeText(context, "Xóa tài khoản thành công!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Xóa tài khoản thất bại!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static class AccountViewHolder extends RecyclerView.ViewHolder {
         TextView txtAccountName, txtBalance;
+        ImageButton btnDelete;
 
         public AccountViewHolder(@NonNull View itemView) {
             super(itemView);
             txtAccountName = itemView.findViewById(R.id.txtAccountName);
             txtBalance = itemView.findViewById(R.id.txtBalance);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }

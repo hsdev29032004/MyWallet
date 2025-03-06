@@ -59,7 +59,7 @@ public class AccountFragment extends Fragment {
         List<Account> accountList = dbHelper.getAccountsByUserId(1);
 
         if (accountAdapter == null) {
-            accountAdapter = new AccountAdapter(accountList);
+            accountAdapter = new AccountAdapter(getContext(), accountList);
             recyclerView.setAdapter(accountAdapter);
         } else {
             accountAdapter.updateData(accountList);
