@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import androidx.fragment.app.Fragment;
 
 
 import androidx.activity.EdgeToEdge;
@@ -19,6 +20,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.Calendar;
 
 
@@ -59,6 +63,14 @@ public class Transaction extends AppCompatActivity {
 
         // Lưu giao dịch
         btnCreate.setOnClickListener(v -> saveTransaction());
+        // Áp dụng padding cho status bar
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+
     }
 
 
@@ -134,13 +146,17 @@ public class Transaction extends AppCompatActivity {
             boolean isInserted = dbHelper.insertTransaction(userId, accountId, categoryId, amount, "Chi", selectedDate, note);
             if (isInserted) {
                 Toast.makeText(this, "Giao dịch được thêm thành công!", Toast.LENGTH_SHORT).show();
+
             } else {
                 Toast.makeText(this, "Lỗi khi thêm giao dịch!", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(this, "Lỗi: Không tìm thấy userId!", Toast.LENGTH_SHORT).show();
+
         }
 
 
     }
+
+
 }
