@@ -239,8 +239,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean deleteAccount(int accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        int deletedRows = db.delete("Account", "account_id = ?", new String[]{String.valueOf(accountId)});
+        ContentValues values = new ContentValues();
+        values.put("isDeleted", 1);
+
+        int updatedRows = db.update("Account", values, "account_id = ?", new String[]{String.valueOf(accountId)});
         db.close();
-        return deletedRows > 0;
+        return updatedRows > 0;
     }
 }
