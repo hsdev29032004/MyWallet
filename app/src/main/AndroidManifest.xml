@@ -12,11 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyWallet"
         tools:targetApi="31">
-
+        <activity
+            android:name=".Activities.AddCategoryActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.CategoryActivity"
             android:exported="false" />
-
         <activity
             android:name=".Activities.AddAccountActivity"
             android:exported="false" />

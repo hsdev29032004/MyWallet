@@ -2,7 +2,10 @@ package com.example.mywallet.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TabHost;
 
 import androidx.activity.EdgeToEdge;
@@ -21,15 +24,12 @@ import java.util.List;
 
 public class CategoryActivity extends AppCompatActivity {
 
-    TabHost tabCategory;
-/*    CategoryAdapter adapterCategory;
-    ArrayList<Category> listCategory;*/
+    private TabHost tabCategory;
+    private DatabaseHelper dbHelper;
+    private GridView gvCategoryThu, gvCategoryChi;
+    private CategoryAdapter adapterThu, adapterChi;
+    private ImageButton btnBackToTransaction, btnAddCategory;
 
-    DatabaseHelper dbHelper;
-
-    //Dữ liệu thử
-    int iconCategory = R.drawable.account;
-    String nameCategory = "Danh mục";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,12 +42,59 @@ public class CategoryActivity extends AppCompatActivity {
         });
 
         //ánh xạ id
-        GridView gvCategoryThu = findViewById(R.id.gvCategoryThu);
-        GridView gvCategoryChi = findViewById(R.id.gvCategoryChi);
+        gvCategoryThu = findViewById(R.id.gvCategoryThu);
+        gvCategoryChi = findViewById(R.id.gvCategoryChi);
         tabCategory = findViewById(R.id.tabCategory);
+        btnBackToTransaction = findViewById(R.id.btnBackToTransaction);
+        btnAddCategory = findViewById(R.id.btnAddCategory);
 
         //Lấy dữ liệu ra khỏi csdl
         dbHelper = new DatabaseHelper(this);
+
+
+        //Hiển thị dữ liệu và
+        loadCategories();
+        setupTabHost();
+
+        //Xử lý sự kiện click vào các danh mục
+        setupGridViewClickListeners();
+
+        //Xử lý sự kiện click nút quay lại ở đây
+        btnBackToTransaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                finish();//Đóng
+            }
+        });
+
+        btnAddCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+    }
+
+    private void setupTabHost() {
+        tabCategory.setup();
+
+        TabHost.TabSpec specChi = tabCategory.newTabSpec("tabChi");
+        specChi.setContent(R.id.tab1);
+        specChi.setIndicator("Chi");
+        tabCategory.addTab(specChi);
+
+        TabHost.TabSpec specThu = tabCategory.newTabSpec("tabThu");
+        specThu.setContent(R.id.tab2);
+        specThu.setIndicator("Thu");
+        tabCategory.addTab(specThu);
+    }
+
+    private void loadCategories() {
         List<Category> listCategoryThu = dbHelper.getCategoriesByType("Thu");
         List<Category> listCategoryChi = dbHelper.getCategoriesByType("Chi");
 
@@ -63,66 +110,31 @@ public class CategoryActivity extends AppCompatActivity {
 
 
         //Sử dụng adapter
-        CategoryAdapter adapterThu = new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, new ArrayList<>(listCategoryThu));
-        CategoryAdapter adapterChi = new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, new ArrayList<>(listCategoryChi));
+        adapterThu = new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, new ArrayList<>(listCategoryThu));
+        adapterChi = new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, new ArrayList<>(listCategoryChi));
 
         gvCategoryThu.setAdapter(adapterThu);
         gvCategoryChi.setAdapter(adapterChi);
-
-        // Xử lý sự kiện cho gv Category thu
-        gvCategoryThu.setOnItemClickListener((parent, view, position, id) -> {
-            Category selectedCategory = adapterThu.getItem(position);
-            if (selectedCategory != null) {
-                // Nếu tên là "Chưa chọn" thì không làm gì
-                if ("Chưa chọn".equals(selectedCategory.getName())) {
-                    return;
-                }
-                // Nếu danh mục hợp lệ, trả về kết quả hoặc xử lý theo yêu cầu
-                // Ví dụ: trả về kết quả cho Activity gọi (nếu sử dụng startActivityForResult)
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("category_id", selectedCategory.getId());
-                resultIntent.putExtra("category_name", selectedCategory.getName());
-                resultIntent.putExtra("category_type", selectedCategory.getType());
-
-                //Sử dụng intent ở đây để gọi đến Activity Thêm giao dịch
-                setResult(RESULT_OK, resultIntent);
-                finish();
-            }
-        });
-
-        // Xử lý sự kiện cho gv Category chi
-        gvCategoryChi.setOnItemClickListener((parent, view, position, id) -> {
-            Category selectedCategory = adapterChi.getItem(position);
-            if (selectedCategory != null) {
-                if ("Chưa chọn".equals(selectedCategory.getName())) {
-                    return;
-                }
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("category_id", selectedCategory.getId());
-                resultIntent.putExtra("category_name", selectedCategory.getName());
-                resultIntent.putExtra("category_type", selectedCategory.getType());
-
-                //Sử dụng intent ở đây để gọi đến Activity Thêm giao dịch
-                setResult(RESULT_OK, resultIntent);
-                finish();
-            }
-        });
-
-
-        //Xử lý tab host
-        tabCategory = findViewById(R.id.tabCategory);
-        tabCategory.setup();
-
-        TabHost.TabSpec specChi = tabCategory.newTabSpec("tabChi");
-        specChi.setContent(R.id.tab1);
-        specChi.setIndicator("Chi");
-        tabCategory.addTab(specChi);
-
-        TabHost.TabSpec specThu = tabCategory.newTabSpec("tabThu");
-        specThu.setContent(R.id.tab2);
-        specThu.setIndicator("Thu");
-        tabCategory.addTab(specThu);
     }
 
+    // Hàm xử lý sự kiện khi người dùng chọn danh mục từ GridView
+    private void setupGridViewClickListeners() {
+        gvCategoryThu.setOnItemClickListener((parent, view, position, id) -> handleCategorySelection(adapterThu, position));
+        gvCategoryChi.setOnItemClickListener((parent, view, position, id) -> handleCategorySelection(adapterChi, position));
+    }
+
+    // Hàm xử lý logic khi chọn một danh mục
+    private void handleCategorySelection(CategoryAdapter adapter, int position) {
+        Category selectedCategory = adapter.getItem(position);
+        if (selectedCategory != null && !"Chưa chọn".equals(selectedCategory.getName())) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("category_id", selectedCategory.getId());
+            resultIntent.putExtra("category_name", selectedCategory.getName());
+            resultIntent.putExtra("category_type", selectedCategory.getType());
+
+            setResult(RESULT_OK, resultIntent);
+            // finish(); // Nếu muốn đóng Activity sau khi chọn danh mục
+        }
+    }
 
 }

@@ -236,4 +236,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return result;
     }
+
+    public boolean insertCategory(String name, String type) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("type", type);
+        values.put("isDeleted", 0);
+
+        long result = db.insert("Category", null, values);
+        db.close();
+        return result != -1; // Nếu `result != -1` thì chèn thành công
+    }
+
 }

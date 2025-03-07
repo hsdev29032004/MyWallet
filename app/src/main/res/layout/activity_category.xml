@@ -14,7 +14,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/btnQuayLai"
+            android:id="@+id/btnBackToTransaction"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@null"
