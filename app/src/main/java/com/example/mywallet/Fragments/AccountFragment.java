@@ -29,8 +29,6 @@ public class AccountFragment extends Fragment {
     private DatabaseHelper dbHelper;
     private TextView txtNoAccount;
     private View rootView;
-    private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account, container, false);
@@ -48,7 +46,7 @@ public class AccountFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddAccountActivity.class);
-                startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE); // Mở activity và chờ kết quả
+                startActivity(intent);
             }
         });
 
@@ -74,10 +72,8 @@ public class AccountFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == getActivity().RESULT_OK) {
-            loadAccounts();
-        }
+    public void onResume() {
+        super.onResume();
+        loadAccounts();
     }
 }

@@ -246,4 +246,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return updatedRows > 0;
     }
+
+    public boolean updateAccount(Account account) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", account.getName());
+        values.put("balance", account.getBalance());
+
+        int rowsAffected = db.update("Account", values, "account_id = ?", new String[]{String.valueOf(account.getId())});
+        db.close();
+        return rowsAffected > 0;
+    }
+
 }

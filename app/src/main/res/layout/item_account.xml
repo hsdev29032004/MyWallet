@@ -26,12 +26,12 @@
         android:text="Số dư"
         android:textSize="16sp"
         android:textColor="#009688"
-        app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+        app:layout_constraintEnd_toStartOf="@+id/btnEditAccount"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageButton
-        android:id="@+id/btnEdit"
+        android:id="@+id/btnEditAccount"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="?attr/selectableItemBackground"
