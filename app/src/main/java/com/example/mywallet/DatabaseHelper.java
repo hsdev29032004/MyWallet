@@ -173,10 +173,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return exists;
     }
-    public boolean insertTransaction(int userId, int accountId, int categoryId, double amount, String type, String date, String note) {
+    public boolean insertTransaction(int userId, int accountId, int categoryId, double amount, String type, String date, String dueDate, String note) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-
 
         values.put("user_id", userId);
         values.put("account_id", accountId);
@@ -184,13 +183,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("amount", amount);
         values.put("transaction_type", type);
         values.put("date", date);
+        values.put("due_date", dueDate); // Bổ sung thiếu sót
         values.put("note", note);
-
 
         long result = db.insert("Transactions", null, values);
         db.close();
         return result != -1;
     }
+
+
+    public boolean updateTransaction(int transactionId, int accountId, int categoryId, double amount, String type, String date, String dueDate, String note) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("account_id", accountId);
+        values.put("category_id", categoryId);
+        values.put("amount", amount);
+        values.put("transaction_type", type);
+        values.put("date", date);
+        values.put("due_date", dueDate); // ✅ Bổ sung due_date
+        values.put("note", note);
+
+        int rowsAffected = db.update("Transactions", values, "id = ?", new String[]{String.valueOf(transactionId)});
+        db.close();
+        return rowsAffected > 0;
+    }
+
+
+
 
 
 
@@ -228,6 +248,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d("DB_USER", "User ID lấy được: " + userId);
         return userId;
     }
+    public Map<String, String> getTransactionById(int transactionId) {
+        Map<String, String> transaction = new HashMap<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT c.name, t.amount, t.transaction_type, t.date, t.due_date, t.note, a.name " +
+                "FROM Transactions t " +
+                "JOIN Category c ON t.category_id = c.category_id " + // Lấy tên danh mục
+                "JOIN Account a ON t.account_id = a.account_id " +    // 🔥 Thêm JOIN để lấy payment_method
+                "WHERE t.transaction_id = ?";
+
+
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(transactionId)});
+        Log.d("DB_QUERY", "Số giao dịch lấy được: " + cursor.getCount());
+
+        if (cursor.moveToFirst()) {
+            transaction.put("category_name", cursor.getString(0)); // Tên danh mục
+            transaction.put("amount", cursor.getString(1)); // Số tiền
+            transaction.put("transaction_type", cursor.getString(2)); // Loại giao dịch
+            transaction.put("date", cursor.getString(3)); // Ngày giao dịch
+            transaction.put("due_date", cursor.getString(4)); // Hạn thanh toán
+            transaction.put("note", cursor.getString(5)); // Ghi chú
+            transaction.put("payment_method", cursor.getString(6)); // ✅ Lấy phương thức thanh toán từ bảng Account
+
+            Log.d("DB_QUERY", "Giao dịch: " + transaction.toString());
+        } else {
+            Log.d("DB_QUERY", "Không tìm thấy giao dịch với ID: " + transactionId);
+        }
+
+        cursor.close();
+        db.close();
+        return transaction;
+    }
 
 
     public List<Map<String, String>> getTransactionsForCurrentUser(Context context) {
@@ -240,10 +293,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT t.account_id, c.name, t.amount, t.transaction_type, t.date, t.due_date, t.note " +
+        String query = "SELECT t.transaction_id, t.account_id, c.name, t.amount, t.transaction_type, t.date, t.due_date, t.note " +
                 "FROM Transactions t " +
-                "JOIN Category c ON t.category_id = c.category_id " + // JOIN để lấy tên danh mục
+                "JOIN Category c ON t.category_id = c.category_id " +
                 "WHERE t.user_id = ?";
+
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(user_id)});
         Log.d("DB_QUERY", "Số giao dịch lấy được: " + cursor.getCount());
@@ -251,17 +305,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Map<String, String> transaction = new HashMap<>();
-                transaction.put("category_name", cursor.getString(1)); // Tên danh mục
-                transaction.put("amount", cursor.getString(2)); // Số tiền
-                transaction.put("transaction_type", cursor.getString(3)); // Loại giao dịch
-                transaction.put("date", cursor.getString(4)); // Ngày giao dịch
-                transaction.put("due_date", cursor.getString(5)); // Hạn thanh toán
-                transaction.put("note", cursor.getString(6)); // Ghi chú
+                transaction.put("transaction_id", cursor.getString(0)); // Thêm transaction_id
+                transaction.put("category_name", cursor.getString(2)); // Tên danh mục
+                transaction.put("amount", cursor.getString(3)); // Số tiền
+                transaction.put("transaction_type", cursor.getString(4)); // Loại giao dịch
+                transaction.put("date", cursor.getString(5)); // Ngày giao dịch
+                transaction.put("due_date", cursor.getString(6)); // Hạn thanh toán
+                transaction.put("note", cursor.getString(7)); // Ghi chú
                 Log.d("DB_QUERY", "Giao dịch: " + transaction.toString());
 
                 transactions.add(transaction);
             } while (cursor.moveToNext());
-        } else {
+        }
+        else {
             Log.d("DB_QUERY", "Không có giao dịch nào trong database.");
         }
 

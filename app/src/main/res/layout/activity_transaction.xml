@@ -25,7 +25,7 @@
             android:layout_width="370dp"
             android:layout_gravity="center"
             android:layout_height="48dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="0dp"
             android:background="@drawable/boder"
             android:text="   Tổng số dư: 0 VND"
             android:textColor="#2196F3"
@@ -86,12 +86,40 @@
                 android:padding="10dp"/>
 
 
-            <Button
-                android:id="@+id/btnDate"
+            <!-- Ngày tạo (chỉ đọc, hiển thị ngày hiện tại) -->
+            <TextView
+                android:id="@+id/tvCreatedDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Chọn ngày"
+                android:text="Ngày tạo: "
+                android:textSize="18sp"
+                android:textStyle="bold"
                 android:padding="10dp"/>
+
+            <!-- Nút chọn ngày đến hạn -->
+            <Button
+                android:id="@+id/btnDueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chọn ngày đến hạn"
+                android:padding="10dp"/>
+
+            <!-- Ô nhập ngày đến hạn (sẽ hiển thị ngày sau khi chọn) -->
+            <EditText
+                android:id="@+id/edtDueDate"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Ngày đến hạn"
+                android:padding="10dp"
+                android:focusable="false"
+                android:clickable="false"/>
+
+
+            <Spinner
+                android:id="@+id/spnTransactionType"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"/>
+
 
 
             <Spinner
@@ -104,7 +132,7 @@
             <Button
                 android:id="@+id/btnCreate"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="Tạo"
                 android:textColor="@android:color/white"/>
         </LinearLayout>

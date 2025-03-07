@@ -1,7 +1,9 @@
 package com.example.mywallet;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,15 +43,34 @@ public class HistoryFragment extends Fragment {
         double totalIncome = 0, totalExpense = 0;
 
         for (Map<String, String> transaction : transactions) {
-            double amount = Double.parseDouble(transaction.get("amount"));
-            if ("income".equals(transaction.get("transaction_type"))) {
+            Log.d("TransactionDebug", "Giao dịch: " + transaction.toString());
+
+            String amountStr = transaction.get("amount");
+            String type = transaction.get("transaction_type");
+
+            if (amountStr == null || type == null) {
+                Log.e("TransactionError", "Thiếu dữ liệu: " + transaction.toString());
+                continue;
+            }
+
+            double amount = Double.parseDouble(amountStr);
+
+            if ("Thu".equals(type)) {
                 totalIncome += amount;
-            } else {
+            } else if ("Chi".equals(type)) {
                 totalExpense += amount;
+            } else {
+                Log.e("TransactionError", "Loại giao dịch không hợp lệ: " + type);
             }
         }
 
+
         double balance = totalIncome - totalExpense;
+        if (balance < 0) {
+            tvBalance.setTextColor(Color.RED);  // Số dư âm màu đỏ
+        } else {
+            tvBalance.setTextColor(Color.GREEN); // Số dư dương màu xanh lá
+        }
 
         tvIncome.setText("Tổng thu\n" + totalIncome + "đ");
         tvExpense.setText("Tổng chi\n" + totalExpense + "đ");

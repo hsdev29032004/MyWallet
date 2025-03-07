@@ -6,7 +6,6 @@
     android:padding="10dp"
     android:background="@android:color/white"
     android:layout_marginBottom="4dp">
-
     <!-- Thông tin giao dịch -->
     <LinearLayout
         android:layout_width="0dp"
@@ -40,4 +39,16 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="@android:color/holo_red_dark"/>
+    <!-- Nút sửa -->
+    <TextView
+        android:id="@+id/tvEdit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:text="Sửa"
+        android:textSize="14sp"
+        android:textColor="@android:color/holo_blue_dark"
+        android:padding="8dp"
+        android:clickable="true"
+        android:focusable="true"/>
+
 </LinearLayout>
