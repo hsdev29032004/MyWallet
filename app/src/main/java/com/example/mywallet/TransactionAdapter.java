@@ -1,6 +1,7 @@
 package com.example.mywallet;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -22,8 +23,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
     private List<Map<String, String>> transactionList;
-    public TransactionAdapter(List<Map<String, String>> transactionList){
-        this.transactionList=transactionList;
+    private HistoryFragment fragment;
+    private DatabaseHelper databaseHelper;
+    public TransactionAdapter(List<Map<String, String>> transactionList, DatabaseHelper databaseHelper, HistoryFragment fragment) {
+        this.transactionList = transactionList;
+        this.databaseHelper = databaseHelper;
+        this.fragment = fragment;
     }
     @NonNull
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
@@ -64,6 +69,33 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
                 Log.e("EditTransaction", "Lỗi chuyển đổi transaction_id: " + e.getMessage());
             }
         });
+        holder.itemView.setOnLongClickListener(v -> {
+            new AlertDialog.Builder(v.getContext())
+                    .setTitle("Xóa giao dịch")
+                    .setMessage("Bạn có chắc muốn xóa giao dịch này?")
+                    .setPositiveButton("Xóa", (dialog, which) -> {
+                        try {
+                            int transactionId = Integer.parseInt(transaction.get("transaction_id"));
+
+                            // Xóa giao dịch trong database
+                            databaseHelper.deleteTransaction(transactionId);
+
+                            // Xóa khỏi danh sách hiển thị
+                            transactionList.remove(position);
+                            notifyItemRemoved(position);
+                            notifyItemRangeChanged(position, transactionList.size());
+
+                            // Cập nhật lại tổng thu, tổng chi, số dư
+                            fragment.loadTransactionHistory();
+                        } catch (NumberFormatException e) {
+                            Log.e("DeleteTransaction", "Lỗi chuyển đổi transaction_id: " + e.getMessage());
+                        }
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+            return true;
+        });
+
 
 
 
@@ -94,4 +126,5 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         }
 
     }
+
 }

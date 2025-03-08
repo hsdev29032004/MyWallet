@@ -1,6 +1,5 @@
 package com.example.mywallet;
 
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,30 +15,33 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.Map;
 
-
 public class HistoryFragment extends Fragment {
     private RecyclerView recyclerView;
     private TransactionAdapter adapter;
     private DatabaseHelper databaseHelper;
     private TextView tvIncome, tvExpense, tvBalance;
+    private List<Map<String, String>> transactions;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_history,container,false);
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
 
-        recyclerView=view.findViewById(R.id.recyclerViewHistory);
-        tvIncome=view.findViewById(R.id.tvIncome);
-        tvExpense=view.findViewById(R.id.tvExpense);
-        tvBalance=view.findViewById(R.id.tvBalance);
+        recyclerView = view.findViewById(R.id.recyclerViewHistory);
+        tvIncome = view.findViewById(R.id.tvIncome);
+        tvExpense = view.findViewById(R.id.tvExpense);
+        tvBalance = view.findViewById(R.id.tvBalance);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        databaseHelper=new DatabaseHelper(getContext());
+        databaseHelper = new DatabaseHelper(getContext());
+        /*databaseHelper.deleteInvalidTransactions();*/ // Xóa giao dịch lỗi
+
         loadTransactionHistory();
         return view;
     }
-    private void loadTransactionHistory() {
-        List<Map<String, String>> transactions = databaseHelper.getTransactionsForCurrentUser(getContext());
+
+    public void loadTransactionHistory() {
+        transactions = databaseHelper.getTransactionsForCurrentUser(getContext());
         double totalIncome = 0, totalExpense = 0;
 
         for (Map<String, String> transaction : transactions) {
@@ -55,28 +57,27 @@ public class HistoryFragment extends Fragment {
 
             double amount = Double.parseDouble(amountStr);
 
-            if ("Thu".equals(type)) {
+            if ("Thu".equalsIgnoreCase(type)) {
                 totalIncome += amount;
-            } else if ("Chi".equals(type)) {
+            } else if ("Chi".equalsIgnoreCase(type)) {
                 totalExpense += amount;
             } else {
                 Log.e("TransactionError", "Loại giao dịch không hợp lệ: " + type);
             }
         }
 
-
         double balance = totalIncome - totalExpense;
-        if (balance < 0) {
-            tvBalance.setTextColor(Color.RED);  // Số dư âm màu đỏ
-        } else {
-            tvBalance.setTextColor(Color.GREEN); // Số dư dương màu xanh lá
-        }
-
+        tvBalance.setTextColor(balance < 0 ? Color.RED : Color.GREEN);
         tvIncome.setText("Tổng thu\n" + totalIncome + "đ");
         tvExpense.setText("Tổng chi\n" + totalExpense + "đ");
         tvBalance.setText("Số dư hiện tại: " + balance + "đ");
 
-        adapter = new TransactionAdapter(transactions);
-        recyclerView.setAdapter(adapter);
+        if (adapter == null) {
+            adapter = new TransactionAdapter(transactions, databaseHelper, this);
+
+            recyclerView.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
     }
 }

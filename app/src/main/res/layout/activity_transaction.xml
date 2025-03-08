@@ -34,15 +34,7 @@
             android:textStyle="bold" />
 
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="26dp"
-            android:text="Lịch sử ghi chép >>"
-            android:textColor="#2196F3"
-            android:textSize="20sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,88 +45,55 @@
             android:background="@drawable/boder">
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tạo giao dịch"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:gravity="center"/>
+            <!-- Spinner chọn tài khoản -->
+            <Spinner
+                android:id="@+id/spinnerAccount"
+                android:layout_width="match_parent"
+                android:layout_height="48dp" />
 
+            <!-- Spinner chọn danh mục -->
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="48dp" />
 
+            <!-- Nhập số tiền giao dịch -->
             <EditText
                 android:id="@+id/edtAmount"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:hint="Nhập số tiền"
-                android:inputType="numberDecimal"
-                android:padding="10dp"/>
+                android:inputType="numberDecimal" />
 
-
-            <Spinner
-                android:id="@+id/spnCategory"
+            <!-- Chọn ngày (mặc định ngày hiện tại) -->
+            <TextView
+                android:id="@+id/txtDate"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:prompt="@string/choose_category_prompt"/>
+                android:layout_height="wrap_content"
+                android:text="Ngày: "
+                android:padding="8dp" />
 
+            <!-- Nhập ngày đến hạn (chỉ hiển thị nếu danh mục là Khoản cho vay/Khoản vay) -->
+            <EditText
+                android:id="@+id/edtDueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ngày đến hạn"
+                android:visibility="gone" />
 
+            <!-- Nhập ghi chú -->
             <EditText
                 android:id="@+id/edtNote"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:hint="Ghi chú"
-                android:padding="10dp"/>
+                android:hint="Ghi chú (Không bắt buộc)" />
 
-
-            <!-- Ngày tạo (chỉ đọc, hiển thị ngày hiện tại) -->
-            <TextView
-                android:id="@+id/tvCreatedDate"
+            <!-- Nút tạo giao dịch -->
+            <Button
+                android:id="@+id/btnAddTransaction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ngày tạo: "
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:padding="10dp"/>
-
-            <!-- Nút chọn ngày đến hạn -->
-            <Button
-                android:id="@+id/btnDueDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Chọn ngày đến hạn"
-                android:padding="10dp"/>
-
-            <!-- Ô nhập ngày đến hạn (sẽ hiển thị ngày sau khi chọn) -->
-            <EditText
-                android:id="@+id/edtDueDate"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Ngày đến hạn"
-                android:padding="10dp"
-                android:focusable="false"
-                android:clickable="false"/>
-
-
-            <Spinner
-                android:id="@+id/spnTransactionType"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"/>
-
-
-
-            <Spinner
-                android:id="@+id/spnPaymentMethod"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:prompt="@string/choose_payment_method_prompt"/>
-
-
-            <Button
-                android:id="@+id/btnCreate"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="Tạo"
-                android:textColor="@android:color/white"/>
+                android:text="Tạo giao dịch" />
         </LinearLayout>
 
 

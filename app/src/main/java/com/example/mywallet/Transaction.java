@@ -1,12 +1,9 @@
 package com.example.mywallet;
 
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,249 +12,125 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.fragment.app.Fragment;
-import java.text.SimpleDateFormat;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.Calendar;
-
-
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class Transaction extends AppCompatActivity {
 
-
-    private DatabaseHelper dbHelper;
-    private EditText edtAmount;
-    private EditText edtDueDate;
-    private EditText edtNote;
-    private Spinner spnCategory, spnPaymentMethod, spnTransactionType;
-    private Button btnCreate, btnDueDate;
-    private String selectedCategory, selectedPaymentMethod, selectedDate;
-    private TextView tvCreatedDate;
-    private String transactionType;
-    private int transactionId;
+    private Spinner spinnerAccount, spinnerCategory;
+    private EditText edtAmount, edtDueDate, edtNote;
+    private TextView txtDate;
+    private Button btnAddTransaction;
+    private DatabaseHelper db;
+    private int userId;
+    private List<String> accountList;
+    private List<String> categoryList;
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction);
 
-        dbHelper = new DatabaseHelper(this);
-
-        // Khởi tạo UI
+        // Ánh xạ UI
+        spinnerAccount = findViewById(R.id.spinnerAccount);
+        spinnerCategory = findViewById(R.id.spinnerCategory);
         edtAmount = findViewById(R.id.edtAmount);
-        edtNote = findViewById(R.id.edtNote);
+        txtDate = findViewById(R.id.txtDate);
         edtDueDate = findViewById(R.id.edtDueDate);
-        spnCategory = findViewById(R.id.spnCategory);
-        spnPaymentMethod = findViewById(R.id.spnPaymentMethod);
-        btnCreate = findViewById(R.id.btnCreate);
-        btnDueDate = findViewById(R.id.btnDueDate);
-        tvCreatedDate = findViewById(R.id.tvCreatedDate);
-        spnTransactionType = findViewById(R.id.spnTransactionType);
+        edtNote = findViewById(R.id.edtNote);
+        btnAddTransaction = findViewById(R.id.btnAddTransaction);
+        db = new DatabaseHelper(this);
 
-        // Lấy transactionId từ Intent
-        Intent intent = getIntent();
-        transactionId = intent.getIntExtra("transaction_id", -1);
-        Log.d("EditTransaction", "transaction_id nhận được: " + transactionId);
+        // Lấy user_id từ Shared Preferences
+        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+        userId = prefs.getInt("user_id", -1);
+        if (userId == -1) {
+            Toast.makeText(this, "Không tìm thấy user_id", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Hiển thị danh sách tài khoản & danh mục
+        loadAccounts();
         loadCategories();
-        loadPaymentMethods();
-        spnTransactionType = findViewById(R.id.spnTransactionType);
 
-        spnTransactionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        // Lấy ngày hiện tại
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        txtDate.setText("Ngày: " + currentDate);
+
+        // Sự kiện chọn danh mục để hiển thị due_date nếu cần
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                transactionType = position == 0 ? "Chi" : "Thu";
+                String categoryType = categoryList.get(position); // Loại danh mục được chọn
+                if (categoryType.equals("Vay") || categoryType.equals("Khoản cho vay")) {
+                    edtDueDate.setVisibility(View.VISIBLE);
+                } else {
+                    edtDueDate.setVisibility(View.GONE);
+                }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        // Kiểm tra nếu đang chỉnh sửa thì load dữ liệu
-        if (transactionId != -1) {
-            loadTransactionData(transactionId);
-        }
+        // Xử lý khi nhấn nút tạo giao dịch
+        btnAddTransaction.setOnClickListener(view -> saveTransaction());
     }
 
+    private void loadAccounts() {
+        accountList = db.getAccountsByUser(userId); // Danh sách tên tài khoản
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, accountList);
+        spinnerAccount.setAdapter(adapter);
+    }
 
     private void loadCategories() {
-        List<String> categories = dbHelper.getAllCategories();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnCategory.setAdapter(adapter);
-        spnCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedCategory = categories.get(position);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
+        categoryList = db.getCategories(); // Danh sách tên danh mục
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categoryList);
+        spinnerCategory.setAdapter(adapter);
     }
-
-
-    private void loadPaymentMethods() {
-        List<String> accounts = dbHelper.getAllBudgets();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, accounts);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnPaymentMethod.setAdapter(adapter);
-        spnPaymentMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedPaymentMethod = accounts.get(position);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-    }
-
-
-
-
 
     private void saveTransaction() {
-        String amountStr = edtAmount.getText().toString().trim();
-        if (edtNote.getText().toString().trim().isEmpty()) {
-            Log.d("DEBUG", "Chưa có ghi chú");
-        }
+        // Lấy tên tài khoản và danh mục, sau đó tìm account_id và category_id
+        String selectedAccountName = accountList.get(spinnerAccount.getSelectedItemPosition());
+        String selectedCategoryName = categoryList.get(spinnerCategory.getSelectedItemPosition());
 
+        // Tìm account_id và category_id tương ứng
+        int selectedAccountId = db.getAccountIdByName(selectedAccountName);
+        int selectedCategoryId = db.getCategoryIdByName(selectedCategoryName);
 
-        // Kiểm tra edtDueDate có null không, nếu có thì set giá trị mặc định
-        if (edtDueDate.getText().toString().trim().isEmpty()) {
-            edtDueDate.setText("01/01/2025");
-        }
-
-
-
-        if (tvCreatedDate == null) {
-            tvCreatedDate = findViewById(R.id.tvCreatedDate);
-        }
-        if (tvCreatedDate != null && tvCreatedDate.getText().toString().trim().isEmpty()) {
-            String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
-            tvCreatedDate.setText("Ngày tạo: " + currentDate);
-        }
-
-
-
-        String note = edtNote.getText().toString().trim();
-        String dueDate = edtDueDate.getText().toString().trim();
-        if (selectedDate == null) {
-            selectedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
-        }
-
-        if (amountStr.isEmpty() || selectedCategory == null || selectedPaymentMethod == null || selectedDate == null || dueDate.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+        // Kiểm tra nếu user nhập số tiền hợp lệ
+        double amount = 0;
+        try {
+            amount = Double.parseDouble(edtAmount.getText().toString());
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Số tiền không hợp lệ!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double amount = Double.parseDouble(amountStr);
-        int categoryId = dbHelper.getCategoryIdByName(selectedCategory);
-        int accountId = dbHelper.getAccountIdByName(selectedPaymentMethod);
+        String note = edtNote.getText().toString().isEmpty() ? "Không có ghi chú" : edtNote.getText().toString();
+        String dueDate = edtDueDate.getVisibility() == View.VISIBLE ? edtDueDate.getText().toString() : null;
 
-        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
-        int userId = sharedPreferences.getInt("USER_ID", -1);
-
-        if (userId != -1) {
-            boolean isSuccess;
-            if (transactionId == -1) {
-                // THÊM MỚI
-                isSuccess = dbHelper.insertTransaction(userId, accountId, categoryId, amount, transactionType, selectedDate, dueDate, note); // ✅ Thêm dueDate
-            } else {
-                // CẬP NHẬT
-                isSuccess = dbHelper.updateTransaction(transactionId, accountId, categoryId, amount, transactionType, selectedDate, dueDate, note); // ✅ Thêm dueDate
-            }
-
-            if (isSuccess) {
-
-                Toast.makeText(this,"Giao dịch được lưu thành công!",Toast.LENGTH_SHORT).show();
-                Intent intent=new Intent(Transaction.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(this, "Lỗi khi lưu giao dịch!", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(this, "Lỗi: Không tìm thấy userId!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void loadTransactionData(int transactionId) {
-        if (dbHelper == null) {
-            dbHelper = new DatabaseHelper(this);
-        }
-
-        // Lấy thông tin từ database
-        Map<String, String> transaction = dbHelper.getTransactionById(transactionId);
-        if (transaction == null || transaction.isEmpty()) {
-            Log.e("LoadTransaction", "Transaction not found for ID: " + transactionId);
-            Toast.makeText(this, "Không tìm thấy giao dịch!", Toast.LENGTH_SHORT).show();
+        // Kiểm tra số tiền không vượt ngân sách
+        double remainingBudget = db.getRemainingBudget(userId, selectedCategoryId); // Sử dụng category_id
+        if (amount > remainingBudget) {
+            Toast.makeText(this, "Số tiền vượt quá ngân sách!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.d("LoadTransaction", "Transaction Data: " + transaction.toString());
-        if (edtAmount != null) {
-            edtAmount.setText(transaction.get("amount"));
+        // Thêm vào database
+        boolean success = db.insertTransaction(userId, selectedAccountId, selectedCategoryId, amount, dueDate, note);
+        if (success) {
+            Toast.makeText(this, "Giao dịch đã được thêm!", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
-            Log.e("LoadTransaction", "edtAmount is NULL!");
-        }
-
-        if (edtNote != null) {
-            edtNote.setText(transaction.get("note"));
-        } else {
-            Log.e("LoadTransaction", "edtNote is NULL!");
-        }
-
-        if (edtDueDate != null) {
-            edtDueDate.setText(transaction.get("due_date") != null ? transaction.get("due_date") : "Chưa có ngày đáo hạn");
-        } else {
-            Log.e("LoadTransaction", "edtDueDate is NULL!");
-        }
-
-
-
-        // Set dữ liệu cho các trường khác
-        edtAmount.setText(transaction.get("amount"));
-        edtNote.setText(transaction.get("note"));
-        selectedDate = transaction.get("date");
-
-        selectedCategory = transaction.get("category_name");
-        selectedPaymentMethod = transaction.get("payment_method");
-
-        // Chọn đúng category & phương thức thanh toán
-        ArrayAdapter<String> categoryAdapter = (ArrayAdapter<String>) spnCategory.getAdapter();
-        if (categoryAdapter != null) {
-            int categoryPosition = categoryAdapter.getPosition(selectedCategory);
-            if (categoryPosition >= 0) spnCategory.setSelection(categoryPosition);
-        }
-
-        ArrayAdapter<String> paymentAdapter = (ArrayAdapter<String>) spnPaymentMethod.getAdapter();
-        if (paymentAdapter != null) {
-            int paymentPosition = paymentAdapter.getPosition(selectedPaymentMethod);
-            if (paymentPosition >= 0) spnPaymentMethod.setSelection(paymentPosition);
-        }
-
-        // Chọn loại giao dịch (0: Chi, 1: Thu)
-        transactionType = transaction.get("transaction_type");
-        if (transactionType != null) {
-            spnTransactionType.setSelection(transactionType.equalsIgnoreCase("Chi") ? 0 : 1);
+            Toast.makeText(this, "Lỗi khi thêm giao dịch!", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
-
-
-
 }

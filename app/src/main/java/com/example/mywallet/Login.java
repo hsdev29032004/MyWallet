@@ -73,7 +73,7 @@ public class Login extends AppCompatActivity {
                         // Lưu userId vào SharedPreferences
                         SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putInt("USER_ID", userId);
+                        editor.putInt("user_id", userId);
                         editor.apply();
 
 
