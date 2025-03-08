@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mywallet.Activities.EditAccountActivity;
+import com.example.mywallet.Activities.Account.EditAccountActivity;
 import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.Models.Account;
 import com.example.mywallet.R;

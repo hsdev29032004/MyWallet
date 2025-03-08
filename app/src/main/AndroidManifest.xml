@@ -13,13 +13,13 @@
         android:theme="@style/Theme.MyWallet"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.EditAccountActivity"
+            android:name=".Activities.Account.EditAccountActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.CategoryActivity"
+            android:name=".Activities.Category.CategoryActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.AddAccountActivity"
+            android:name=".Activities.Account.AddAccountActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.MainActivity"

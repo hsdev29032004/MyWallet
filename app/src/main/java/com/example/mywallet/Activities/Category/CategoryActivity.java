@@ -1,4 +1,4 @@
-package com.example.mywallet.Activities;
+package com.example.mywallet.Activities.Category;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mywallet.Activities.AddAccountActivity;
+import com.example.mywallet.Activities.Account.AddAccountActivity;
 import com.example.mywallet.Adapters.AccountAdapter;
 import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.Models.Account;
