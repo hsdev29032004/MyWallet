@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TabHost;
 
 import androidx.activity.EdgeToEdge;
@@ -14,7 +13,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.mywallet.Activities.AddCategoryActivity;
 import com.example.mywallet.Adapters.CategoryAdapter;
 import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.Models.Category;
