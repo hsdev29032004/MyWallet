@@ -6,6 +6,9 @@ public class Category {
     private String name;
     private String type;
 
+    public Category() {
+    }
+
     public Category(int id, int icon, String name, String type) {
         this.id = id;
         this.icon = icon;
@@ -54,5 +57,10 @@ public class Category {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }
