@@ -2,6 +2,10 @@ package com.example.mywallet.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -17,12 +21,29 @@ import com.example.mywallet.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
+    private TextView tvAddBudget;
+    private ImageView ivAddBudget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        tvAddBudget = findViewById(R.id.tvAddBudget);
+        ivAddBudget = findViewById(R.id.ivAddBudget);
+
+        // Xử lý click vào TextView hoặc Icon để mở BudgetActivity
+        View.OnClickListener openBudgetActivity = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, BudgetActivity.class);
+                startActivity(intent);
+            }
+        };
+
+        tvAddBudget.setOnClickListener(openBudgetActivity);
+        ivAddBudget.setOnClickListener(openBudgetActivity);
 
         // Áp dụng padding cho status bar
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
