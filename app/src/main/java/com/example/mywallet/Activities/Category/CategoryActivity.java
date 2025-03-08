@@ -2,9 +2,10 @@ package com.example.mywallet.Activities.Category;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TabHost;
 
 import androidx.activity.EdgeToEdge;
@@ -25,9 +26,9 @@ public class CategoryActivity extends AppCompatActivity {
 
     private TabHost tabCategory;
     private DatabaseHelper dbHelper;
-    private GridView gvCategoryThu, gvCategoryChi;
+    private ListView lvCategoryThu, lvCategoryChi;
     private CategoryAdapter adapterThu, adapterChi;
-    private ImageButton btnBackToTransaction, btnAddCategory;
+    private ImageButton btnBackToTransaction, btnAddCategory, btnDeleteCategory, btnEditCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +42,13 @@ public class CategoryActivity extends AppCompatActivity {
         });
 
         //ánh xạ id
-        gvCategoryThu = findViewById(R.id.gvCategoryThu);
-        gvCategoryChi = findViewById(R.id.gvCategoryChi);
+        lvCategoryThu = findViewById(R.id.lvCategoryThu);
+        lvCategoryChi = findViewById(R.id.lvCategoryChi);
         tabCategory = findViewById(R.id.tabCategory);
         btnBackToTransaction = findViewById(R.id.btnBackToTransaction);
         btnAddCategory = findViewById(R.id.btnAddCategory);
+        btnDeleteCategory = findViewById(R.id.btnDeleteCategory);
+        btnEditCategory = findViewById(R.id.btnEditCategory);
 
         //Lấy dữ liệu ra khỏi csdl
         dbHelper = new DatabaseHelper(this);
@@ -56,14 +59,14 @@ public class CategoryActivity extends AppCompatActivity {
         setupTabHost();
 
         //Xử lý sự kiện click vào các danh mục
-        setupGridViewClickListeners();
+        setupListViewClickListeners();
 
         //Xử lý sự kiện click nút quay lại ở đây
         btnBackToTransaction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                finish();//Đóng
+                finish();//Đóng activity này trở về activity trước đó
             }
         });
 
@@ -98,42 +101,44 @@ public class CategoryActivity extends AppCompatActivity {
         List<Category> listCategoryChi = dbHelper.getCategoriesByType("Chi");
 
 
-        //Thêm dữ liệu vào list
-        int defaultIcon = R.drawable.account; //icon mặc định
-        while (listCategoryThu.size() < 9) {
-            listCategoryThu.add(new Category(0, defaultIcon, "Chưa chọn", "Thu"));
-        }
-        while (listCategoryChi.size() < 9) {
-            listCategoryChi.add(new Category(0, defaultIcon, "Chưa chọn", "Chi"));
-        }
-
-
         //Sử dụng adapter
         adapterThu = new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, new ArrayList<>(listCategoryThu));
         adapterChi = new CategoryAdapter(CategoryActivity.this, R.layout.layout_category_item, new ArrayList<>(listCategoryChi));
 
-        gvCategoryThu.setAdapter(adapterThu);
-        gvCategoryChi.setAdapter(adapterChi);
+        lvCategoryThu.setAdapter(adapterThu);
+        lvCategoryChi.setAdapter(adapterChi);
     }
 
-    // Hàm xử lý sự kiện khi người dùng chọn danh mục từ GridView
-    private void setupGridViewClickListeners() {
-        gvCategoryThu.setOnItemClickListener((parent, view, position, id) -> handleCategorySelection(adapterThu, position));
-        gvCategoryChi.setOnItemClickListener((parent, view, position, id) -> handleCategorySelection(adapterChi, position));
+    // Hàm xử lý sự kiện khi người dùng chọn danh mục từ ListView
+    private void setupListViewClickListeners() {
+        lvCategoryThu.setOnItemClickListener((parent, view, position, id) -> handleCategorySelection(adapterThu, position));
+        lvCategoryChi.setOnItemClickListener((parent, view, position, id) -> handleCategorySelection(adapterChi, position));
     }
+
+
+
+
 
     // Hàm xử lý logic khi chọn một danh mục
     private void handleCategorySelection(CategoryAdapter adapter, int position) {
         Category selectedCategory = adapter.getItem(position);
-        if (selectedCategory != null && !"Chưa chọn".equals(selectedCategory.getName())) {
+        if (selectedCategory != null ) {
             Intent resultIntent = new Intent();
             resultIntent.putExtra("category_id", selectedCategory.getId());
             resultIntent.putExtra("category_name", selectedCategory.getName());
             resultIntent.putExtra("category_type", selectedCategory.getType());
 
             setResult(RESULT_OK, resultIntent);
-            // finish(); // Nếu muốn đóng Activity sau khi chọn danh mục
+             finish(); // Đóng Activity sau khi chọn danh mục
         }
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            loadCategories(); // Load lại danh mục sau khi cập nhật
+        }
+    }
+
 
 }
