@@ -1,6 +1,5 @@
 package com.example.mywallet.Activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,7 +9,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.mywallet.Fragments.AccountFragment;
-import com.example.mywallet.Fragments.HistoryFragment;
+import com.example.mywallet.Fragments.History.HistoryFragment;
 import com.example.mywallet.Fragments.HomeFragment;
 import com.example.mywallet.Fragments.ProfileFragment;
 import com.example.mywallet.R;
