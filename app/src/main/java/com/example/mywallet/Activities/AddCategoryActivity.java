@@ -16,6 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.mywallet.Activities.Category.CategoryActivity;
 import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.R;
 

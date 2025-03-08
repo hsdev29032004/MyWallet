@@ -1,4 +1,4 @@
-package com.example.mywallet.Activities;
+package com.example.mywallet.Activities.Account;
 
 import android.os.Bundle;
 import android.view.View;

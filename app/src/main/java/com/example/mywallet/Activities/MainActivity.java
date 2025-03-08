@@ -9,8 +9,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.mywallet.Activities.Category.CategoryActivity;
 import com.example.mywallet.Fragments.AccountFragment;
-import com.example.mywallet.Fragments.HistoryFragment;
+import com.example.mywallet.Fragments.History.HistoryFragment;
 import com.example.mywallet.Fragments.HomeFragment;
 import com.example.mywallet.Fragments.ProfileFragment;
 import com.example.mywallet.R;
@@ -31,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Intent myintent = new Intent(MainActivity.this, CategoryActivity.class);
-        startActivity(myintent);
+//        Intent myintent = new Intent(MainActivity.this, CategoryActivity.class);
+//        startActivity(myintent);
 
-        /*// Mặc định hiển thị HomeFragment khi mở app
+        // Mặc định hiển thị HomeFragment khi mở app
         loadFragment(new HomeFragment());
 
         // Xử lý sự kiện click cho BottomNavigation
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
             return true;
-        });*/
+        });
     }
 
     // Hàm load Fragment vào container
