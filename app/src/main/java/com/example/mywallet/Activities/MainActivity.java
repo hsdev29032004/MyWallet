@@ -1,5 +1,6 @@
 package com.example.mywallet.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.mywallet.Activities.Category.CategoryActivity;
 import com.example.mywallet.Fragments.AccountFragment;
 import com.example.mywallet.Fragments.History.HistoryFragment;
 import com.example.mywallet.Fragments.HomeFragment;
@@ -29,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+//        Intent myintent = new Intent(MainActivity.this, CategoryActivity.class);
+//        startActivity(myintent);
 
         // Mặc định hiển thị HomeFragment khi mở app
         loadFragment(new HomeFragment());
