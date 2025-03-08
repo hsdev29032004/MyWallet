@@ -467,4 +467,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return transactions;
     }
+
+    public boolean updateCategory(int categoryId, String newName, String newType) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_CATEGORY_NAME, newName);
+        values.put(COLUMN_CATEGORY_TYPE, newType);
+
+        int rowsAffected = db.update(TABLE_CATEGORY, values, COLUMN_CATEGORY_ID + " = ?", new String[]{String.valueOf(categoryId)});
+        db.close();
+        return rowsAffected > 0; // Trả về true nếu cập nhật thành công
+    }
+
+    public boolean deleteCategory(int categoryId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("isDeleted", 1);  // Đánh dấu là đã xoá
+
+        int rowsAffected = db.update(TABLE_CATEGORY, values, COLUMN_CATEGORY_ID + " = ?", new String[]{String.valueOf(categoryId)});
+        db.close();
+        return rowsAffected > 0; // Trả về true nếu xoá thành công
+    }
+
+
+
 }

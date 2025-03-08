@@ -2,29 +2,29 @@ package com.example.mywallet.Models;
 
 public class Category {
     private int id;
-    private int icon;
+    private int user_id;
     private String name;
     private String type;
 
+    public Category(int id, int user_id, String name, String type) {
+        this.id = id;
+        this.user_id = user_id;
+        this.name = name;
+        this.type = type;
+    }
+
+    public Category(int user_id, String name, String type) {
+        this.user_id = user_id;
+        this.name = name;
+        this.type = type;
+    }
+
+    public Category(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
+
     public Category() {
-    }
-
-    public Category(int id, int icon, String name, String type) {
-        this.id = id;
-        this.icon = icon;
-        this.name = name;
-        this.type = type;
-    }
-
-    public Category(int icon, String name) {
-        this.icon = icon;
-        this.name = name;
-    }
-
-    public Category(int id, String name, String type) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
     }
 
     public int getId() {
@@ -35,12 +35,12 @@ public class Category {
         this.id = id;
     }
 
-    public int getIcon() {
-        return icon;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setIcon(int icon) {
-        this.icon = icon;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
     public String getName() {
