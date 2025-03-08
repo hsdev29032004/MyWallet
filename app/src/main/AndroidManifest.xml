@@ -13,6 +13,15 @@
         android:theme="@style/Theme.MyWallet"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.BudgetActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.UpdateBudgetActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.AddBudgetActivity"
+            android:exported="true" />
+        <activity
             android:name=".Activities.AddCategoryActivity"
             android:exported="false" />
         <activity
