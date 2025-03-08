@@ -117,8 +117,6 @@ public class CategoryActivity extends AppCompatActivity {
 
 
 
-
-
     // Hàm xử lý logic khi chọn một danh mục
     private void handleCategorySelection(CategoryAdapter adapter, int position) {
         Category selectedCategory = adapter.getItem(position);
