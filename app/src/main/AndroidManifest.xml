@@ -22,11 +22,17 @@
             android:name=".Activities.AddBudgetActivity"
             android:exported="true" />
         <activity
-            android:name=".Activities.CategoryActivity"
-            android:exported="true" />
+            android:name=".Activities.AddCategoryActivity"
+            android:exported="false" />
         <activity
-            android:name=".Activities.AddAccountActivity"
-            android:exported="true" />
+            android:name=".Activities.Account.EditAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Category.CategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Account.AddAccountActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true">

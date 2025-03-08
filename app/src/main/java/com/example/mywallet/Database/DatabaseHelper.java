@@ -5,10 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.mywallet.Models.Account;
 import com.example.mywallet.Models.Budget;
 import com.example.mywallet.Models.Category;
+import com.example.mywallet.Models.Transaction;
 import com.example.mywallet.R;
 
 import java.util.ArrayList;
@@ -42,13 +44,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY_IS_DELETED = "isDeleted";
 
     // Bảng Transaction (Đổi tên để tránh lỗi từ khóa SQLite)
-    public static final String TABLE_TRANSACTION = "Transactions";
-    public static final String COLUMN_TRANSACTION_ID = "transaction_id";
-    public static final String COLUMN_AMOUNT = "amount";
-    public static final String COLUMN_TRANSACTION_TYPE = "transaction_type";
-    public static final String COLUMN_DATE = "date";
-    public static final String COLUMN_DUE_DATE = "due_date";
-    public static final String COLUMN_NOTE = "note";
+    private static final String TABLE_TRANSACTION = "Transactions";
+    private static final String COLUMN_TRANSACTION_ID = "transaction_id";
+    private static final String COLUMN_AMOUNT = "amount";
+    private static final String COLUMN_DATE = "date";
+    private static final String COLUMN_DUE_DATE = "due_date";
+    private static final String COLUMN_NOTE = "note";
 
     // Bảng Budget
     public static final String TABLE_BUDGET = "Budget";
@@ -93,7 +94,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ACCOUNT_ID + " INTEGER, "
                 + COLUMN_CATEGORY_ID + " INTEGER, "
                 + COLUMN_AMOUNT + " REAL, "
-                + COLUMN_TRANSACTION_TYPE + " TEXT, "
                 + COLUMN_DATE + " TEXT, "
                 + COLUMN_DUE_DATE + " TEXT, "
                 + COLUMN_NOTE + " TEXT, "
@@ -126,7 +126,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO Account (user_id, name, balance, isDeleted) VALUES (1, 'Vietcombank', 10000000, 0)");
         db.execSQL("INSERT INTO Account (user_id, name, balance, isDeleted) VALUES (1, 'Momo', 20000000, 0)");
 
-
         //Thêm danh mục
         db.execSQL("INSERT INTO Category (name, type) VALUES ('Ăn uống', 'Chi')");
         db.execSQL("INSERT INTO Category (name, type) VALUES ('Mua sắm', 'Chi')");
@@ -135,6 +134,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO Category (name, type) VALUES ('Tiền thưởng', 'Thu')");
         db.execSQL("INSERT INTO Category (name, type) VALUES ('Tiền cấp', 'Thu')");
 
+        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
+                "VALUES (1, 1, 1, 100000, '2025-03-01', NULL, 'Ăn sáng')");
+        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
+                "VALUES (1, 2, 2, 300000, '2025-03-02', NULL, 'Mua sách')");
+        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
+                "VALUES (1, 3, 3, 200000, '2025-03-03', NULL, 'Xem phim')");
+        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
+                "VALUES (1, 1, 4, 5000000, '2025-03-04', NULL, 'Lương tháng 3')");
+        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
+                "VALUES (1, 1, 5, 1000000, '2025-03-05', NULL, 'Thưởng dự án')");
     }
 
     @Override
@@ -376,11 +385,86 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public boolean insertCategory(String name, String type) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("type", type);
+        values.put("isDeleted", 0);
 
+        long result = db.insert("Category", null, values);
+        db.close();
+        return result != -1; // Nếu `result != -1` thì chèn thành công
+    }
 
+    public boolean deleteAccount(int accountId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("isDeleted", 1);
 
+        int updatedRows = db.update("Account", values, "account_id = ?", new String[]{String.valueOf(accountId)});
+        db.close();
+        return updatedRows > 0;
+    }
 
+    public boolean updateAccount(Account account) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", account.getName());
+        values.put("balance", account.getBalance());
 
+        int rowsAffected = db.update("Account", values, "account_id = ?", new String[]{String.valueOf(account.getId())});
+        db.close();
+        return rowsAffected > 0;
+    }
+    public List<Transaction> getIncomeTransactions(String startDate, String endDate) {
+        return getTransactionsByCategoryType("Thu", startDate, endDate);
+    }
 
+    public List<Transaction> getExpenseTransactions(String startDate, String endDate) {
+        return getTransactionsByCategoryType("Chi", startDate, endDate);
+    }
 
+    private List<Transaction> getTransactionsByCategoryType(String type, String startDate, String endDate) {
+        List<Transaction> transactions = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Xây dựng câu truy vấn SQL
+        String query = "SELECT c.name as category_name, t.amount, t.date, t.note " +
+                "FROM Transactions t " +
+                "INNER JOIN Category c ON t.category_id = c.category_id " +
+                "WHERE c.type = ?";
+
+        List<String> params = new ArrayList<>();
+        params.add(type);
+
+        // Kiểm tra và thêm điều kiện cho ngày
+        if (startDate != null && !startDate.isEmpty()) {
+            query += " AND t.date >= ?";
+            params.add(startDate);
+        }
+
+        if (endDate != null && !endDate.isEmpty()) {
+            query += " AND t.date <= ?";
+            params.add(endDate);
+        }
+
+        // Thực thi câu truy vấn SQL
+        Cursor cursor = db.rawQuery(query, params.toArray(new String[0]));
+
+        if (cursor.moveToFirst()) {
+            do {
+                Transaction transaction = new Transaction(
+                        cursor.getString(cursor.getColumnIndexOrThrow("category_name")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("amount")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("note")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("date"))
+                );
+                transactions.add(transaction);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return transactions;
+    }
 }
