@@ -7,36 +7,12 @@
     android:padding="16dp"
     tools:context=".Activities.MainActivity"
     android:id="@+id/main">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/ivAddBudget"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/baseline_add_box_24"
-            android:contentDescription="Add Budget"/>
-
-        <TextView
-            android:id="@+id/tvAddBudget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Xem Ngân Sách"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
-    </LinearLayout>
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
