@@ -1,26 +1,143 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".Activities.MainActivity"
+    tools:context=".MainActivity"
     android:id="@+id/main">
-
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="1dp"
+        android:layout_below="@id/bottomNavigation" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
+    <!-- Tiêu đề -->
+    <TextView
+        android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="#2196F3"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu" />
+        android:text="Quản lý tài chính cá nhân"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="#1565C0"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:padding="10dp" />
+
+    <!-- Tài khoản -->
+    <TextView
+        android:id="@+id/tvAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tài khoản"
+        android:textSize="16sp"
+        android:textColor="#1565C0"
+        android:gravity="center"
+        android:padding="8dp" />
+    <!-- Ngân sách -->
+    <TextView
+        android:id="@+id/tvBudget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ngân sách tháng: 4.000.000đ"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:background="#D3D3D3"
+        android:padding="10dp" />
+
+    <!-- Bảng thông tin -->
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TableRow>
+            <TextView
+                android:text="Chi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold" />
+            <TextView
+                android:text="Thu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold" />
+            <TextView
+                android:text="Tổng"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:id="@+id/tvChi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="0đ"
+                android:gravity="center" />
+            <TextView
+                android:id="@+id/tvThu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="0đ"
+                android:gravity="center" />
+            <TextView
+                android:id="@+id/tvTong"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="0đ"
+                android:gravity="center" />
+        </TableRow>
+    </TableLayout>
+
+    <!-- Bọc ListView trong LinearLayout với layout_weight -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/listViewAccounts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp"
+            android:padding="8dp" />
+    </LinearLayout>
+
+    <!-- Thêm giao dịch -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="59dp"
+        android:layout_height="57dp"
+        android:layout_gravity="start"
+        android:contentDescription="Thêm giao dịch"
+        app:srcCompat="@drawable/add" />
+
+    <!-- Thanh điều hướng -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#2196F3"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav_menu" />
+    </LinearLayout>
 
 </LinearLayout>
