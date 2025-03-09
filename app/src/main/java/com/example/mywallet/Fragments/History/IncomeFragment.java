@@ -27,7 +27,9 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class IncomeFragment extends Fragment {
     private EditText edtStartDate, edtEndDate;
@@ -102,10 +104,18 @@ public class IncomeFragment extends Fragment {
     }
 
     private void loadIncomeChart(List<Transaction> transactions) {
-        List<PieEntry> entries = new ArrayList<>();
+        Map<String, Double> categoryTotals = new HashMap<>();
 
         for (Transaction transaction : transactions) {
-            entries.add(new PieEntry((float) transaction.getAmount(), transaction.getCategoryName()));
+            String categoryName = transaction.getCategoryName();
+            double amount = transaction.getAmount();
+
+            categoryTotals.put(categoryName, categoryTotals.getOrDefault(categoryName, 0.0) + amount);
+        }
+
+        List<PieEntry> entries = new ArrayList<>();
+        for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
+            entries.add(new PieEntry(entry.getValue().floatValue(), entry.getKey()));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Thu nhập");
@@ -113,7 +123,6 @@ public class IncomeFragment extends Fragment {
         dataSet.setValueTextSize(14f);
 
         PieData pieData = new PieData(dataSet);
-
         pieChartIncome.setData(pieData);
         pieChartIncome.setCenterText("Thu nhập theo danh mục");
         pieChartIncome.animateY(1000);
