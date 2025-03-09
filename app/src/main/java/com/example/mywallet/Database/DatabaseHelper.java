@@ -12,6 +12,7 @@ import com.example.mywallet.Models.Budget;
 import com.example.mywallet.Models.Category;
 import com.example.mywallet.Models.Transaction;
 import com.example.mywallet.R;
+import com.github.mikephil.charting.data.PieEntry;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -820,6 +821,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
+    public ArrayList<PieEntry> getIncomeData(SQLiteDatabase db, String startDate, String endDate) {
+        ArrayList<PieEntry> entries = new ArrayList<>();
 
+        String query = "SELECT category.name, SUM(Transactions.amount) as total " +
+                "FROM Transactions " +
+                "INNER JOIN category ON Transactions.category_id = category.id " +
+                "WHERE category.type = 'Thu'";
 
+        if (!startDate.isEmpty() && !endDate.isEmpty()) {
+            query += " AND Transactions.date BETWEEN ? AND ?";
+        }
+
+        query += " GROUP BY category.name";
+
+        Cursor cursor;
+        if (!startDate.isEmpty() && !endDate.isEmpty()) {
+            cursor = db.rawQuery(query, new String[]{startDate, endDate});
+        } else {
+            cursor = db.rawQuery(query, null);
+        }
+
+        while (cursor.moveToNext()) {
+            String categoryName = cursor.getString(0);
+            float totalAmount = cursor.getFloat(1);
+            entries.add(new PieEntry(totalAmount, categoryName));
+        }
+        cursor.close();
+        return entries;
+    }
 }
