@@ -36,30 +36,30 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Intent myintent = new Intent(MainActivity.this, CategoryActivity.class);
-        startActivity(myintent);
+//        Intent myintent = new Intent(MainActivity.this, CategoryActivity.class);
+//        startActivity(myintent);
 
-//        // Mặc định hiển thị HomeFragment khi mở app
-//        loadFragment(new HomeFragment());
-//
-//        // Xử lý sự kiện click cho BottomNavigation
-//        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
-//        bottomNavigation.setOnItemSelectedListener(item -> {
-//            int itemId = item.getItemId();
-//
-//            if (itemId == R.id.nav_home) {
-//                loadFragment(new HomeFragment());
-//            } else if (itemId == R.id.nav_account) {
-//                loadFragment(new AccountFragment());
-//            } else if (itemId == R.id.nav_history) {
-//                loadFragment(new HistoryFragment());
-//            } else if (itemId == R.id.nav_profile) {
-//                loadFragment(new ProfileFragment());
-//            } else {
-//                return false;
-//            }
-//            return true;
-//        });
+        // Mặc định hiển thị HomeFragment khi mở app
+        loadFragment(new HomeFragment());
+
+        // Xử lý sự kiện click cho BottomNavigation
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottomNavigation);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_home) {
+                loadFragment(new HomeFragment());
+            } else if (itemId == R.id.nav_account) {
+                loadFragment(new AccountFragment());
+            } else if (itemId == R.id.nav_history) {
+                loadFragment(new HistoryFragment());
+            } else if (itemId == R.id.nav_profile) {
+                loadFragment(new ProfileFragment());
+            } else {
+                return false;
+            }
+            return true;
+        });
     }
 
     // Hàm load Fragment vào container
