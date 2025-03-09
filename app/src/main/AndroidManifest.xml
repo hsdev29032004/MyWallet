@@ -13,6 +13,12 @@
         android:theme="@style/Theme.MyWallet"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.IntroduceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.EditProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Category.EditCategoryActivity"
             android:exported="false" />
         <activity
