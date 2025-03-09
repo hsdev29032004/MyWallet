@@ -1,4 +1,4 @@
-package com.example.mywallet.Activities.Transaction;
+package com.example.mywallet.Activities.TransactionPackage;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -14,11 +14,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.mywallet.Activities.MainActivity;
 import com.example.mywallet.Database.DatabaseHelper;
@@ -29,7 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Calendar;
+
 public class Transaction extends AppCompatActivity {
     private Spinner spinnerAccount, spinnerCategory;
     private EditText edtAmount, edtDueDate, edtNote;

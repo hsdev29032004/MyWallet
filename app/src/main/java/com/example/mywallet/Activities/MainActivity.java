@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -15,9 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.mywallet.Activities.Budget.BudgetActivity;
-import com.example.mywallet.Activities.Category.CategoryActivity;
-import com.example.mywallet.Activities.Transaction.Transaction;
+import com.example.mywallet.Activities.TransactionPackage.Transaction;
 import com.example.mywallet.Fragments.AccountFragment;
 import com.example.mywallet.Fragments.History.HistoryFragment;
 import com.example.mywallet.Fragments.HomeFragment;

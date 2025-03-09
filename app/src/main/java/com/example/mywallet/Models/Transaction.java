@@ -21,6 +21,26 @@ public class Transaction {
         this.dueDate = dueDate;
         this.note = note;
     }
+    public Transaction(int id, String categoryName, double amount, String note, String date) {
+        this.id = id;
+        this.categoryName = categoryName;
+        this.amount = amount;
+        this.note = note;
+        this.date = date;
+    }
+
+    // Constructor đầy đủ
+    public Transaction(int id, int user_id, int account_id, int categoryId, double amount, String date, String dueDate, String note) {
+        this.id = id;
+        this.user_id = user_id;
+        this.account_id = account_id;
+        this.categoryId = categoryId;
+        this.amount = amount;
+        this.date = date;
+        this.dueDate = dueDate;
+        this.note = note;
+    }
+
 
     public Transaction(String categoryName, double amount, String note, String date) {
         this.categoryName = categoryName;

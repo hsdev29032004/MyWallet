@@ -22,7 +22,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "finance_manager.db";
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 13;
 
     // Bảng User
     public static final String TABLE_USER = "User";
@@ -148,7 +148,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "VALUES (1, 1, 4, 5000000, '2025-03-04', NULL, 'Lương tháng 3')");
         db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
                 "VALUES (1, 1, 5, 1000000, '2025-03-05', NULL, 'Thưởng dự án')");
-        db.execSQL("INSERT INTO Budget (user_id,category_id,amount_limit,start_date,end_date) VALUES('1','1',100000,'2025-1-1','2025-2-2')");
+        db.execSQL("INSERT INTO Budget (user_id,category_id,amount_limit,start_date,end_date) VALUES('1','1',1000000,'2025-1-1','2025-2-2')");
         db.execSQL("INSERT INTO Budget (user_id,category_id,amount_limit,start_date,end_date) VALUES('1','2',100000,'2025-1-1','2025-2-2')");
         db.execSQL("INSERT INTO Budget (user_id,category_id,amount_limit,start_date,end_date) VALUES('1','3',100000,'2025-1-1','2025-2-2')");
         db.execSQL("INSERT INTO Budget (user_id,category_id,amount_limit,start_date,end_date) VALUES('1','7',1000000,'2025-1-1','2025-4-24')");
@@ -438,7 +438,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         // Xây dựng câu truy vấn SQL
-        String query = "SELECT c.name as category_name, t.amount, t.date, t.note " +
+        String query = "SELECT t.transaction_id, c.name as category_name, t.amount, t.date, t.note " +
                 "FROM Transactions t " +
                 "INNER JOIN Category c ON t.category_id = c.category_id " +
                 "WHERE c.type = ?";
@@ -460,21 +460,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Thực thi câu truy vấn SQL
         Cursor cursor = db.rawQuery(query, params.toArray(new String[0]));
 
-        if (cursor.moveToFirst()) {
+        // Kiểm tra kết quả truy vấn
+        if (cursor != null && cursor.moveToFirst()) {
             do {
-                Transaction transaction = new Transaction(
-                        cursor.getString(cursor.getColumnIndexOrThrow("category_name")),
-                        cursor.getDouble(cursor.getColumnIndexOrThrow("amount")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("note")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("date"))
-                );
+                // Kiểm tra transaction_id có tồn tại trong cursor hay không
+                int transactionId = cursor.getInt(cursor.getColumnIndexOrThrow("transaction_id"));
+                String categoryName = cursor.getString(cursor.getColumnIndexOrThrow("category_name"));
+                double amount = cursor.getDouble(cursor.getColumnIndexOrThrow("amount"));
+                String note = cursor.getString(cursor.getColumnIndexOrThrow("note"));
+                String date = cursor.getString(cursor.getColumnIndexOrThrow("date"));
+
+                // Tạo transaction mới và thêm vào danh sách
+                Transaction transaction = new Transaction(transactionId, categoryName, amount, note, date);
                 transactions.add(transaction);
             } while (cursor.moveToNext());
+        } else {
+            Log.d("DatabaseHelper", "No transactions found.");
         }
-        cursor.close();
+
+        // Đóng con trỏ và cơ sở dữ liệu
+        if (cursor != null) {
+            cursor.close();
+        }
         db.close();
+
         return transactions;
     }
+
 
     public boolean updateCategory(int categoryId, String newName, String newType) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -683,6 +695,129 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return totalBalance;
     }
+    public void deleteTransaction(int transactionId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("Transactions", "transaction_id = ?", new String[]{String.valueOf(transactionId)});
+        db.close();
+    }
+    public boolean updateTransaction(int transactionId, double amount, String date, String dueDate, String note, int accountId, int categoryId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("amount", amount);
+        values.put("date", date);
+        values.put("due_date", dueDate);
+        values.put("note", note);
+        values.put("account_id", accountId);
+        values.put("category_id", categoryId);
+
+        int rows = db.update("Transactions", values, "transaction_id = ?", new String[]{String.valueOf(transactionId)});
+        return rows > 0;
+    }
+    public Transaction getTransactionById(int transactionId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Transaction transaction = null;
+
+        Cursor cursor = db.rawQuery("SELECT * FROM Transactions WHERE transaction_id = ?", new String[]{String.valueOf(transactionId)});
+
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex("transaction_id");
+            int userIdIndex = cursor.getColumnIndex("user_id");
+            int accountIdIndex = cursor.getColumnIndex("account_id");
+            int categoryIdIndex = cursor.getColumnIndex("category_id");
+            int amountIndex = cursor.getColumnIndex("amount");
+            int dateIndex = cursor.getColumnIndex("date");
+            int dueDateIndex = cursor.getColumnIndex("due_date");
+            int noteIndex = cursor.getColumnIndex("note");
+
+            if (idIndex != -1 && userIdIndex != -1 && accountIdIndex != -1 &&
+                    categoryIdIndex != -1 && amountIndex != -1 && dateIndex != -1 &&
+                    dueDateIndex != -1 && noteIndex != -1) {
+
+                transaction = new Transaction(
+                        cursor.getInt(idIndex),
+                        cursor.getInt(userIdIndex),
+                        cursor.getInt(accountIdIndex),
+                        cursor.getInt(categoryIdIndex),
+                        cursor.getDouble(amountIndex),
+                        cursor.getString(dateIndex),
+                        cursor.getString(dueDateIndex),
+                        cursor.getString(noteIndex)
+                );
+                Log.d("DatabaseQuery", "Lấy giao dịch thành công: ID = " + transaction.getTransactionId());
+            } else {
+                Log.e("DatabaseError", "Một hoặc nhiều cột không tồn tại!");
+            }
+        } else {
+            Log.e("DatabaseError", "Không tìm thấy giao dịch với ID: " + transactionId);
+        }
+
+        cursor.close();
+        return transaction;
+    }
+    public String getAccountNameById(int accountId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        String accountName = null;
+
+        try {
+            cursor = db.query("Account", // Tên bảng tài khoản
+                    new String[]{"name"}, // Cột cần lấy là tên tài khoản
+                    "account_id = ?", // Điều kiện truy vấn (id tài khoản)
+                    new String[]{String.valueOf(accountId)}, // Tham số truy vấn
+                    null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndex("name");
+                if (columnIndex >= 0) {
+                    accountName = cursor.getString(columnIndex);
+                } else {
+                    Log.e("getAccountNameById", "Cột 'name' không tồn tại.");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return accountName;
+    }
+
+    public String getCategoryNameById(int categoryId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        String categoryName = null;
+
+        try {
+            cursor = db.query("Category", // Tên bảng danh mục
+                    new String[]{"name"}, // Cột cần lấy là tên danh mục
+                    "category_id = ?", // Điều kiện truy vấn (id danh mục)
+                    new String[]{String.valueOf(categoryId)}, // Tham số truy vấn
+                    null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndex("name");
+                if (columnIndex >= 0) {
+                    categoryName = cursor.getString(columnIndex);
+                } else {
+                    Log.e("getCategoryNameById", "Cột 'name' không tồn tại.");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return categoryName;
+    }
+
+
+
 
 
 

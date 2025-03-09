@@ -39,6 +39,24 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_weight="1"/>
+        <ImageButton
+            android:id="@+id/btnEdit"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_edit"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Sửa mục này"
+            android:padding="4dp"/>
+
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_delete"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Xóa mục này"
+            android:padding="4dp"/>
+
     </TableRow>
 
 </TableLayout>
