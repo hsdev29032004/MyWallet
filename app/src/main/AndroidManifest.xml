@@ -16,10 +16,7 @@
             android:name=".Activities.IntroduceActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.EditProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activities.Category.EditCategoryActivity"
+            android:name=".Activities.Category.AddCategoryActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.Budget.BudgetActivity"
