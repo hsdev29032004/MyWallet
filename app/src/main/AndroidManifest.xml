@@ -15,15 +15,16 @@
         <activity
             android:name=".Activities.Transaction.Transaction"
             android:exported="false" />
+
         <activity
             android:name=".Activities.IntroduceActivity"
             android:exported="false" />
-        <activity
-            android:name=".Activities.EditProfileActivity"
+        <!--<activity
+            android:name=".Activities.Fragments.EditProfileActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.Category.EditCategoryActivity"
-            android:exported="false" />
+            android:exported="false" />-->
         <activity
             android:name=".Activities.Budget.BudgetActivity"
             android:exported="false" />

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".MainActivity"
+    tools:context=".Activities.MainActivity"
     android:id="@+id/main">
     <FrameLayout
         android:id="@+id/fragmentContainer"
@@ -14,7 +14,7 @@
         android:layout_height="1dp"
         android:layout_below="@id/bottomNavigation" />
 
-    <!-- Tiêu đề -->
+    <!-- Tiêu đề
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
         android:gravity="center"
         android:padding="10dp" />
 
-    <!-- Tài khoản -->
+    &lt;!&ndash; Tài khoản &ndash;&gt;
     <TextView
         android:id="@+id/tvAccount"
         android:layout_width="match_parent"
@@ -37,7 +37,7 @@
         android:textColor="#1565C0"
         android:gravity="center"
         android:padding="8dp" />
-    <!-- Ngân sách -->
+    &lt;!&ndash; Ngân sách &ndash;&gt;
     <TextView
         android:id="@+id/tvBudget"
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
         android:background="#D3D3D3"
         android:padding="10dp" />
 
-    <!-- Bảng thông tin -->
+    &lt;!&ndash; Bảng thông tin &ndash;&gt;
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
         </TableRow>
     </TableLayout>
 
-    <!-- Bọc ListView trong LinearLayout với layout_weight -->
+    &lt;!&ndash; Bọc ListView trong LinearLayout với layout_weight &ndash;&gt;
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -114,7 +114,7 @@
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"
             android:padding="8dp" />
-    </LinearLayout>
+    </LinearLayout>-->
 
     <!-- Thêm giao dịch -->
     <ImageView
