@@ -99,7 +99,6 @@ public class IncomeFragment extends Fragment {
 
             layoutIncomeHistory.addView(itemView);
         }
-
         loadIncomeChart(incomeTransactions);
     }
 
