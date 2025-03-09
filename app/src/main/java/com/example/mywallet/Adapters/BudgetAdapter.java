@@ -1,62 +1,57 @@
 package com.example.mywallet.Adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mywallet.Activities.Budget.BudgetActivity;
+import com.example.mywallet.Interface.BudgetActionListener;
 import com.example.mywallet.Models.Budget;
 import com.example.mywallet.R;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder> {
-    private Context context;
     private List<Budget> budgetList;
+    private BudgetActionListener actionListener;
 
-    public BudgetAdapter(Context context, List<Budget> budgetList) {
-        this.context = context;
+    public BudgetAdapter(List<Budget> budgetList, BudgetActionListener actionListener) {
         this.budgetList = budgetList;
+        this.actionListener = actionListener;
     }
 
     @NonNull
     @Override
     public BudgetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.budget_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.budget_item, parent, false);
         return new BudgetViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BudgetViewHolder holder, int position) { //onBindViewHolder là một phương thức trong RecyclerView.Adapter có nhiệm vụ gán dữ liệu từ danh sách (List<Budget> budgetList) vào giao diện của từng item trong RecyclerView.
+    public void onBindViewHolder(@NonNull BudgetViewHolder holder, int position) {
         Budget budget = budgetList.get(position);
         holder.budgetName.setText(budget.getName());
 
+        // Định dạng số tiền còn lại
         double remainingAmount = budget.getAmountLimit() - budget.getAmountSpent();
-        holder.budgetAmount.setText("Còn lại: " + remainingAmount + "đ");
+        NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+        String formattedRemainingAmount = formatter.format(remainingAmount) + " đ";
 
+        holder.budgetAmount.setText("Còn lại: " + formattedRemainingAmount);
+
+        // Tính phần trăm và cập nhật ProgressBar
         int progress = (int) ((budget.getAmountSpent() / budget.getAmountLimit()) * 100);
         holder.budgetProgress.setProgress(progress);
 
-        // Xử lý sự kiện nhấn nút Sửa
-        holder.btnEditBudget.setOnClickListener(v -> {
-            if (context instanceof BudgetActivity) {
-                ((BudgetActivity) context).editBudget(budget.getId()); // Gọi phương thức sửa
-            }
-        });
-
-        // Xử lý sự kiện nhấn nút Xóa
-        holder.btnDeleteBudget.setOnClickListener(v -> {
-            if (context instanceof BudgetActivity) {
-                ((BudgetActivity) context).deleteBudget(budget.getId(), position); // Gọi phương thức xóa
-            }
-        });
+        // Xử lý sự kiện khi nhấn nút
+        holder.btnEditBudget.setOnClickListener(v -> actionListener.editBudget(budget.getId()));
+        holder.btnDeleteBudget.setOnClickListener(v -> actionListener.deleteBudget(budget.getId(), position));
     }
 
     @Override
@@ -71,7 +66,6 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
 
         public BudgetViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Ánh xạ các view
             budgetName = itemView.findViewById(R.id.txtBudgetName);
             budgetAmount = itemView.findViewById(R.id.txtBudgetAmount);
             budgetProgress = itemView.findViewById(R.id.progressBudget);

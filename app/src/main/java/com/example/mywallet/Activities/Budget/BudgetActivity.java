@@ -17,12 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mywallet.Adapters.BudgetAdapter;
 import com.example.mywallet.Database.DatabaseHelper;
+import com.example.mywallet.Interface.BudgetActionListener;
 import com.example.mywallet.Models.Budget;
 import com.example.mywallet.R;
 
 import java.util.List;
 
-public class BudgetActivity extends AppCompatActivity {
+public class BudgetActivity extends AppCompatActivity implements BudgetActionListener {
     private RecyclerView recyclerView;
     private BudgetAdapter budgetAdapter;
     private List<Budget> budgetList;
@@ -55,7 +56,7 @@ public class BudgetActivity extends AppCompatActivity {
         // Giả sử userId là 1
         int userId = 1;
         budgetList = dbHelper.getAllBudgets(userId);        // Lấy tất cả ngân sách của người dùng
-        budgetAdapter = new BudgetAdapter(this, budgetList);
+        budgetAdapter = new BudgetAdapter(budgetList, this );
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(budgetAdapter);
 
@@ -80,23 +81,22 @@ public class BudgetActivity extends AppCompatActivity {
         budgetAdapter.notifyDataSetChanged(); // Cập nhật lại RecyclerView
     }
 
-    // Phương thức xử lý khi nhấn nút "Sửa"
+    @Override
     public void editBudget(int budgetId) {
-        Intent intent = new Intent(BudgetActivity.this, UpdateBudgetActivity.class);
-        intent.putExtra("BUDGET_ID", budgetId); // Truyền budgetId qua Intent
+        Intent intent = new Intent(this, UpdateBudgetActivity.class);
+        intent.putExtra("BUDGET_ID", budgetId);
         startActivity(intent);
     }
 
-    // Phương thức xử lý khi nhấn nút "Xóa"
+    @Override
     public void deleteBudget(int budgetId, int position) {
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận xóa")
                 .setMessage("Bạn có chắc chắn muốn xóa ngân sách này không?")
                 .setPositiveButton("Xóa", (dialog, which) -> {
-                    // Gọi phương thức xóa ngân sách từ cơ sở dữ liệu
                     if (dbHelper.deleteBudget(budgetId)) {
-                        budgetList.remove(position); // Xóa ngân sách khỏi danh sách
-                        budgetAdapter.notifyItemRemoved(position); // Cập nhật RecyclerView
+                        budgetList.remove(position);
+                        budgetAdapter.notifyItemRemoved(position);
                         Toast.makeText(this, "Đã xóa ngân sách", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(this, "Xóa thất bại", Toast.LENGTH_SHORT).show();
@@ -105,4 +105,6 @@ public class BudgetActivity extends AppCompatActivity {
                 .setNegativeButton("Hủy", null)
                 .show();
     }
+
+
 }

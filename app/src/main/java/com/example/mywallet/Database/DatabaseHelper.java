@@ -26,7 +26,7 @@ import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "finance_manager.db";
-    public static final int DATABASE_VERSION = 16;
+    public static final int DATABASE_VERSION = 17;
 
 
     // Bảng User
@@ -55,12 +55,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     // Bảng Transaction (Đổi tên để tránh lỗi từ khóa SQLite)
-    private static final String TABLE_TRANSACTION = "Transactions";
-    private static final String COLUMN_TRANSACTION_ID = "transaction_id";
-    private static final String COLUMN_AMOUNT = "amount";
-    private static final String COLUMN_DATE = "date";
-    private static final String COLUMN_DUE_DATE = "due_date";
-    private static final String COLUMN_NOTE = "note";
+    public static final String TABLE_TRANSACTION = "Transactions";
+    public static final String COLUMN_TRANSACTION_ID = "transaction_id";
+    public static final String COLUMN_AMOUNT = "amount";
+    public static final String COLUMN_DATE = "date";
+    public static final String COLUMN_DUE_DATE = "due_date";
+    public static final String COLUMN_NOTE = "note";
 
 
     // Bảng Budget
@@ -355,7 +355,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String selectQuery = "SELECT * FROM " + TABLE_ACCOUNT + " WHERE " + COLUMN_IS_DELETED + " = 0";  // Only non-deleted accounts
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-
         if (cursor.moveToFirst()) {
             do {
                 Account account = new Account();
@@ -368,13 +367,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return accountList;
     }
-    //Lấy tất cả danh mục chưa bị xóa
-    public List<Category> getAllCategories_NonDeleted() {
+    //Lấy tổng số tiền của tài khoản chưa bị xóa
+    public double getTotalBalance() {
+        double totalBalance = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Câu truy vấn lấy tổng balance của các tài khoản chưa bị xóa
+        String query = "SELECT SUM(" + COLUMN_BALANCE + ") FROM " + TABLE_ACCOUNT + " WHERE " + COLUMN_IS_DELETED + " = 0";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                totalBalance = cursor.getDouble(0); // Lấy giá trị tổng balance từ kết quả truy vấn
+            }
+            cursor.close();
+        }
+        db.close();
+        return totalBalance;
+    }
+
+    // Lấy tất cả danh mục chi chưa bị xóa
+    public List<Category> getAllExpenseCategories_NonDeleted() {
         List<Category> categoryList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_CATEGORY + " WHERE " + COLUMN_CATEGORY_IS_DELETED + " = 0";  // Only non-deleted categories
-        Cursor cursor = db.rawQuery(selectQuery, null);
 
+        String selectQuery = "SELECT * FROM " + TABLE_CATEGORY +
+                " WHERE " + COLUMN_CATEGORY_IS_DELETED + " = 0" +
+                " AND " + COLUMN_CATEGORY_TYPE + " = 'Chi'";
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -385,19 +406,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 categoryList.add(category);
             } while (cursor.moveToNext());
         }
+
         cursor.close();
         return categoryList;
     }
+
     //Lấy tất cả ngân sách
     public List<Budget> getAllBudgets(int userId) {
         List<Budget> budgetList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-
         // Truy vấn tất cả ngân sách cho người dùng
         String query = "SELECT * FROM " + TABLE_BUDGET + " WHERE " + COLUMN_USER_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
-
 
         // Duyệt qua tất cả các bản ghi và tạo đối tượng Budget
         if (cursor != null && cursor.moveToFirst()) {
@@ -410,6 +431,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String endDate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_END_DATE));
                 int categoryId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID));
 
+                // Tạo đối tượng Budget và thêm vào danh sách
+                Budget budget = new Budget(budgetId, budgetName, amountLimit, amountSpent, startDate, endDate, categoryId);
+                budgetList.add(budget);
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return budgetList;
+    }
+    //Lấy 2 ngân sách theo Id để hiển thị lên trang chủ
+    public List<Budget> getAllBudgets_limit(int userId) {
+        List<Budget> budgetList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Truy vấn 2 dòng đầu tiên của ngân sách cho người dùng
+        String query = "SELECT * FROM " + TABLE_BUDGET + " WHERE " + COLUMN_USER_ID + " = ? LIMIT 2";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        // Duyệt qua các bản ghi và tạo đối tượng Budget
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int budgetId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BUDGET_ID));
+                String budgetName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BUDGET_NAME));
+                double amountLimit = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_AMOUNT_LIMIT));
+                double amountSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_AMOUNT_SPENT));
+                String startDate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_DATE));
+                String endDate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_END_DATE));
+                int categoryId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID));
 
                 // Tạo đối tượng Budget và thêm vào danh sách
                 Budget budget = new Budget(budgetId, budgetName, amountLimit, amountSpent, startDate, endDate, categoryId);
@@ -417,47 +469,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
-
         if (cursor != null) {
             cursor.close();
         }
 
-
         return budgetList;
     }
+
     // Xóa ngân sách với ID đã cho
     public boolean deleteBudget(int budgetId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int rowsAffected = db.delete(TABLE_BUDGET, COLUMN_BUDGET_ID + " = ?", new String[]{String.valueOf(budgetId)});
 
-
         return rowsAffected > 0; // Trả về true nếu xóa thành công
     }
 
-
     //Thêm dữ liệu vào bảng Ngân Sách
-    public long insertBudget(int userId, int categoryId, int accountId, String budgetName, double amountLimit, String startDate, String endDate) {
+    public long insertBudget(int userId, int categoryId, String budgetName, double amountLimit, String startDate, String endDate) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-
         values.put("user_id", userId);
         values.put("category_id", categoryId);
-        values.put("account_id", accountId);
         values.put("budget_name", budgetName);
         values.put("amount_limit", amountLimit);
         values.put("amount_spent", 0);
         values.put("start_date", startDate);
         values.put("end_date", endDate);
 
-
         long result = db.insert("Budget", null, values);
         db.close();
 
-
         return result;
     }
-
 
     //Trừ tiền khi thêm ngân sách mới
     public void deductBalance(int accountId, double amount) {
@@ -472,7 +516,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-
         contentValues.put(COLUMN_USER_ID, userId);
         contentValues.put(COLUMN_CATEGORY_ID, categoryId);
         contentValues.put(COLUMN_BUDGET_NAME, budgetName);
@@ -481,11 +524,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_START_DATE, startDate);
         contentValues.put(COLUMN_END_DATE, endDate);
 
-
         int result = db.update(TABLE_BUDGET, contentValues, COLUMN_BUDGET_ID + " = ?", new String[]{String.valueOf(budgetId)});
         return result > 0; // Trả về true nếu cập nhật thành công
     }
-
 
     //Cập nhật số tiền đã sử dụng trong Ngân sách thuộc 1 danh mục
     public void updateBudgetSpent(int categoryId, double amount) {
@@ -494,7 +535,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query, new Object[]{amount, categoryId});
         db.close();
     }
-
 
     public boolean insertCategory(String name, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
