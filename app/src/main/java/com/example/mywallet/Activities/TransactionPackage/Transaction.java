@@ -1,5 +1,6 @@
 package com.example.mywallet.Activities.TransactionPackage;
 
+
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,17 +15,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.appcompat.app.AppCompatActivity;
+
 
 import com.example.mywallet.Activities.MainActivity;
 import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.R;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 
 public class Transaction extends AppCompatActivity {
     private Spinner spinnerAccount, spinnerCategory;
@@ -40,6 +45,7 @@ public class Transaction extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction);
 
+
         // Ánh xạ UI
         spinnerAccount = findViewById(R.id.spinnerAccount);
         spinnerCategory = findViewById(R.id.spinnerCategory);
@@ -50,6 +56,7 @@ public class Transaction extends AppCompatActivity {
         btnAddTransaction = findViewById(R.id.btnAddTransaction);
         db = new DatabaseHelper(this);
 
+
         // Lấy user_id từ Shared Preferences
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
         userId = 1;
@@ -59,13 +66,16 @@ public class Transaction extends AppCompatActivity {
             return;
         }
 
+
         // Hiển thị danh sách tài khoản & danh mục
         loadAccounts();
         loadCategories();
 
+
         // Lấy ngày hiện tại
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         txtDate.setText("Ngày: " + currentDate);
+
 
         // Sự kiện chọn danh mục để hiển thị due_date nếu cần
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -76,18 +86,22 @@ public class Transaction extends AppCompatActivity {
                     edtDueDate.setVisibility(View.VISIBLE);
                     edtDueDate.setOnClickListener(v -> showDatePicker());
 
+
                 } else {
                     edtDueDate.setVisibility(View.GONE);
                 }
             }
 
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
+
         // Xử lý khi nhấn nút tạo giao dịch
         btnAddTransaction.setOnClickListener(view -> saveTransaction());
     }
+
 
     private void loadAccounts() {
         accountList = db.getAccountsByUser(userId); // Danh sách tên tài khoản
@@ -95,11 +109,13 @@ public class Transaction extends AppCompatActivity {
         spinnerAccount.setAdapter(adapter);
     }
 
+
     private void loadCategories() {
         categoryList = db.getCategories(); // Danh sách tên danh mục
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categoryList);
         spinnerCategory.setAdapter(adapter);
     }
+
 
     private void saveTransaction() {
         // Lấy tên tài khoản và danh mục, sau đó tìm account_id và category_id
@@ -123,11 +139,13 @@ public class Transaction extends AppCompatActivity {
                 calDue.set(Calendar.SECOND, 0);
                 calDue.set(Calendar.MILLISECOND, 0);
 
+
                 Calendar calToday = Calendar.getInstance();
                 calToday.set(Calendar.HOUR_OF_DAY, 0);
                 calToday.set(Calendar.MINUTE, 0);
                 calToday.set(Calendar.SECOND, 0);
                 calToday.set(Calendar.MILLISECOND, 0);
+
 
                 if (calDue.before(calToday)) {
                     Toast.makeText(this, "Ngày đến hạn phải sau ngày hiện tại!", Toast.LENGTH_SHORT).show();
@@ -139,6 +157,7 @@ public class Transaction extends AppCompatActivity {
             }
         }
 
+
         // Kiểm tra nếu user nhập số tiền hợp lệ
         double amount = 0;
         try {
@@ -147,18 +166,28 @@ public class Transaction extends AppCompatActivity {
             Toast.makeText(this, "Số tiền không hợp lệ!", Toast.LENGTH_SHORT).show();
             return;
         }
+        // Kiểm tra loại danh mục
+        String categoryType = db.getCategoryTypeById(selectedCategoryId);
+        if (categoryType.equals("Chi")) { // Chỉ kiểm tra ngân sách nếu là chi tiêu
+            double remainingBudget = db.getRemainingBudget(userId, selectedCategoryId);
+            if (amount > remainingBudget) {
+                Toast.makeText(this, "Số tiền vượt quá ngân sách!", Toast.LENGTH_SHORT).show();
+                return; // Không lưu giao dịch
+            }
+        }
+
 
         String note = edtNote.getText().toString().isEmpty() ? "Không có ghi chú" : edtNote.getText().toString();
         String dueDate = edtDueDate.getVisibility() == View.VISIBLE ? edtDueDate.getText().toString() : null;
 
+
         // Kiểm tra số tiền không vượt ngân sách
 
-        double remainingBudget = db.getRemainingBudget(userId, selectedCategoryId); // Sử dụng category_id
-        Log.d("Transaction", "Remaining Budget for Category " + selectedCategoryName + ": " + remainingBudget);
-        if (amount > remainingBudget) {
-            Toast.makeText(this, "Số tiền vượt quá ngân sách!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
+
+
+
+
 
         // Thêm vào database
         boolean success = db.insertTransaction(userId, selectedAccountId, selectedCategoryId, amount, dueDate, note);
@@ -171,6 +200,7 @@ public class Transaction extends AppCompatActivity {
             Toast.makeText(this, "Lỗi khi thêm giao dịch!", Toast.LENGTH_SHORT).show();
         }
 
+
     }
     private void showDatePicker() {
         // Lấy ngày hiện tại làm mặc định
@@ -179,6 +209,7 @@ public class Transaction extends AppCompatActivity {
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
+
         // Tạo DatePickerDialog
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
             // Định dạng ngày thành chuỗi yyyy-MM-dd
@@ -186,7 +217,9 @@ public class Transaction extends AppCompatActivity {
             edtDueDate.setText(selectedDate);
         }, year, month, day);
 
+
         datePickerDialog.show();
     }
+
 
 }
