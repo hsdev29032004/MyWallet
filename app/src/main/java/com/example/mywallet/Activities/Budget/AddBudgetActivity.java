@@ -37,9 +37,7 @@ public class AddBudgetActivity extends AppCompatActivity {
     private ImageButton btnClose, btnCheck;
     private DatabaseHelper dbHelper;
     private List<Category> categories;
-    private List<Account> accounts;
     private ArrayAdapter<Category> categoryAdapter;
-    private ArrayAdapter<Account> accountAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +49,7 @@ public class AddBudgetActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         getView();
         // Lấy dl từ database
-        categories = dbHelper.getAllCategories_NonDeleted();
-        accounts = dbHelper.getAllAccounts_NonDeleted();
+        categories = dbHelper.getAllExpenseCategories_NonDeleted();
 
         // Kiểm tra và cập nhật adapter cho Categories
         if (categories != null && !categories.isEmpty()) {
@@ -62,16 +59,6 @@ public class AddBudgetActivity extends AppCompatActivity {
             categoryAdapter.notifyDataSetChanged(); // Cập nhật adapter nếu có dữ liệu
         } else {
             Toast.makeText(this, "Không có danh mục nào", Toast.LENGTH_SHORT).show();
-        }
-
-        // Kiểm tra và cập nhật adapter cho Accounts
-        if (accounts != null && !accounts.isEmpty()) {
-            accountAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, accounts);
-            accountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spAccount.setAdapter(accountAdapter);
-            accountAdapter.notifyDataSetChanged(); // Cập nhật adapter nếu có dữ liệu
-        } else {
-            Toast.makeText(this, "Không có tài khoản nào", Toast.LENGTH_SHORT).show();
         }
 
         // Xử lý sự kiện khi nhấn nút đóng (X)
@@ -104,20 +91,6 @@ public class AddBudgetActivity extends AppCompatActivity {
             }
         });
 
-        spAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // Handle account selection
-                Account selectedAccount = accounts.get(position);
-                // Do something with the selected account
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // Do nothing
-            }
-        });
-
         tvStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,7 +119,6 @@ public class AddBudgetActivity extends AppCompatActivity {
         edBudgetName = findViewById(R.id.edBudgetName);
         tvStartDate = findViewById(R.id.tvStartDate);
         tvEndDate = findViewById(R.id.tvEndDate);
-        spAccount = findViewById(R.id.spAccount);
         spCategory = findViewById(R.id.spCategory);
         btnAdd = findViewById(R.id.btnAdd);
 
@@ -219,18 +191,12 @@ public class AddBudgetActivity extends AppCompatActivity {
                 return;
             }
 
-            Account selectedAccount = (Account) spAccount.getSelectedItem();
+            //Account selectedAccount = (Account) spAccount.getSelectedItem();
             Category selectedCategory = (Category) spCategory.getSelectedItem();
             int userId = 1;  // Giả định User ID là 1, có thể lấy từ SharedPreferences hoặc Session
-            // Kiểm tra số dư tài khoản
-            if (selectedAccount.getBalance() < amountLimit) {
-                Toast.makeText(this, "Số dư tài khoản không đủ để trừ!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            long rowId = dbHelper.insertBudget(userId, selectedCategory.getId(), selectedAccount.getId(), budgetName, amountLimit, startDate, endDate);
+            long rowId = dbHelper.insertBudget(userId, selectedCategory.getId(), budgetName, amountLimit, startDate, endDate);
 
             if (rowId != -1) {
-                dbHelper.deductBalance(selectedAccount.getId(), amountLimit);
                 Toast.makeText(this, "Ngân sách đã được lưu thành công!", Toast.LENGTH_SHORT).show();
                 finish();
             } else {

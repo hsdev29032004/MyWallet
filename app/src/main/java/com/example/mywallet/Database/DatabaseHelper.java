@@ -20,7 +20,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "finance_manager.db";
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 15;
 
     // Bảng User
     public static final String TABLE_USER = "User";
@@ -45,12 +45,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY_IS_DELETED = "isDeleted";
 
     // Bảng Transaction (Đổi tên để tránh lỗi từ khóa SQLite)
-    private static final String TABLE_TRANSACTION = "Transactions";
-    private static final String COLUMN_TRANSACTION_ID = "transaction_id";
-    private static final String COLUMN_AMOUNT = "amount";
-    private static final String COLUMN_DATE = "date";
-    private static final String COLUMN_DUE_DATE = "due_date";
-    private static final String COLUMN_NOTE = "note";
+    public static final String TABLE_TRANSACTION = "Transactions";
+    public static final String COLUMN_TRANSACTION_ID = "transaction_id";
+    public static final String COLUMN_TRANSACTION_TYPE = "transaction_type";
+    public static final String COLUMN_AMOUNT = "amount";
+    public static final String COLUMN_DATE = "date";
+    public static final String COLUMN_DUE_DATE = "due_date";
+    public static final String COLUMN_NOTE = "note";
 
     // Bảng Budget
     public static final String TABLE_BUDGET = "Budget";
@@ -95,6 +96,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ACCOUNT_ID + " INTEGER, "
                 + COLUMN_CATEGORY_ID + " INTEGER, "
                 + COLUMN_AMOUNT + " REAL, "
+                + COLUMN_TRANSACTION_TYPE + " TEXT, "
                 + COLUMN_DATE + " TEXT, "
                 + COLUMN_DUE_DATE + " TEXT, "
                 + COLUMN_NOTE + " TEXT, "
@@ -106,14 +108,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_BUDGET_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_USER_ID + " INTEGER, "
                 + COLUMN_CATEGORY_ID + " INTEGER, "
-                + COLUMN_ACCOUNT_ID + " INTEGER, "
                 + COLUMN_BUDGET_NAME + " TEXT, "
                 + COLUMN_AMOUNT_LIMIT + " REAL, "
                 + COLUMN_AMOUNT_SPENT + " REAL DEFAULT 0, "
                 + COLUMN_START_DATE + " TEXT, "
                 + COLUMN_END_DATE + " TEXT, "
                 + "FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USER + "(" + COLUMN_USER_ID + "), "
-                + "FOREIGN KEY(" + COLUMN_ACCOUNT_ID + ") REFERENCES " + TABLE_ACCOUNT + "(" + COLUMN_ACCOUNT_ID + "), "
                 + "FOREIGN KEY(" + COLUMN_CATEGORY_ID + ") REFERENCES " + TABLE_CATEGORY + "(" + COLUMN_CATEGORY_ID + "))";
 
         db.execSQL(createUserTable);
@@ -135,16 +135,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO Category (name, type) VALUES ('Tiền thưởng', 'Thu')");
         db.execSQL("INSERT INTO Category (name, type) VALUES ('Tiền cấp', 'Thu')");
 
-        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
-                "VALUES (1, 1, 1, 100000, '2025-03-01', NULL, 'Ăn sáng')");
-        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
-                "VALUES (1, 2, 2, 300000, '2025-03-02', NULL, 'Mua sách')");
-        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
-                "VALUES (1, 3, 3, 200000, '2025-03-03', NULL, 'Xem phim')");
-        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
-                "VALUES (1, 1, 4, 5000000, '2025-03-04', NULL, 'Lương tháng 3')");
-        db.execSQL("INSERT INTO Transactions (user_id, account_id, category_id, amount, date, due_date, note) " +
-                "VALUES (1, 1, 5, 1000000, '2025-03-05', NULL, 'Thưởng dự án')");
+        //Them giao dịch
+        db.execSQL("INSERT INTO " + TABLE_TRANSACTION + " (user_id, account_id, category_id, amount, transaction_type, date, due_date, note) VALUES " +
+                "(1, 1, 2, 500000, 'Thu', '2024-03-01', NULL, 'Lương tháng 3'), " +
+                "(1, 1, 3, 200000, 'Chi', '2024-03-02', NULL, 'Mua sắm quần áo'), " +
+                "(1, 1, 4, 150000, 'Chi', '2024-03-03', NULL, 'Ăn uống'), " +
+                "(1, 1, 5, 300000, 'Chi', '2024-03-04', NULL, 'Tiền điện'), " +
+                "(1, 1, 6, 1000000, 'Thu', '2024-03-05', NULL, 'Tiền thưởng')");
+
+
+        //Thêm ngân sách
+        db.execSQL("INSERT INTO " + TABLE_BUDGET + " (" + COLUMN_USER_ID + ", " + COLUMN_CATEGORY_ID + ", " + COLUMN_BUDGET_NAME + ", " + COLUMN_AMOUNT_LIMIT + ", " + COLUMN_AMOUNT_SPENT + ", " + COLUMN_START_DATE + ", " + COLUMN_END_DATE + ") VALUES (1, 2, 'Mua đồ', 5000000, 1000000, '2025-03-01', '2025-03-31')");
+        db.execSQL("INSERT INTO " + TABLE_BUDGET + " (" + COLUMN_USER_ID + ", " + COLUMN_CATEGORY_ID + ", " + COLUMN_BUDGET_NAME + ", " + COLUMN_AMOUNT_LIMIT + ", " + COLUMN_AMOUNT_SPENT + ", " + COLUMN_START_DATE + ", " + COLUMN_END_DATE + ") VALUES (1, 3, 'Đi coffee', 2000000, 500000, '2025-03-01', '2025-03-31')");
+        db.execSQL("INSERT INTO " + TABLE_BUDGET + " (" + COLUMN_USER_ID + ", " + COLUMN_CATEGORY_ID + ", " + COLUMN_BUDGET_NAME + ", " + COLUMN_AMOUNT_LIMIT + ", " + COLUMN_AMOUNT_SPENT + ", " + COLUMN_START_DATE + ", " + COLUMN_END_DATE + ") VALUES (2, 1, 'Đổ xăng', 3000000, 1200000, '2025-03-01', '2025-03-31')");
+        db.execSQL("INSERT INTO " + TABLE_BUDGET + " (" + COLUMN_USER_ID + ", " + COLUMN_CATEGORY_ID + ", " + COLUMN_BUDGET_NAME + ", " + COLUMN_AMOUNT_LIMIT + ", " + COLUMN_AMOUNT_SPENT + ", " + COLUMN_START_DATE + ", " + COLUMN_END_DATE + ") VALUES (1, 4, 'Học tập', 1500000, 300000, '2025-03-01', '2025-03-31')");
+        db.execSQL("INSERT INTO " + TABLE_BUDGET + " (" + COLUMN_USER_ID + ", " + COLUMN_CATEGORY_ID + ", " + COLUMN_BUDGET_NAME + ", " + COLUMN_AMOUNT_LIMIT + ", " + COLUMN_AMOUNT_SPENT + ", " + COLUMN_START_DATE + ", " + COLUMN_END_DATE + ") VALUES (3, 2, 'Đi lại', 2500000, 800000, '2025-03-01', '2025-03-31')");
+
     }
 
     @Override
@@ -274,11 +280,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return accountList;
     }
-    //Lấy tất cả danh mục chưa bị xóa
-    public List<Category> getAllCategories_NonDeleted() {
+    //Lấy tổng số tiền của tài khoản chưa bị xóa
+    public double getTotalBalance() {
+        double totalBalance = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Câu truy vấn lấy tổng balance của các tài khoản chưa bị xóa
+        String query = "SELECT SUM(" + COLUMN_BALANCE + ") FROM " + TABLE_ACCOUNT + " WHERE " + COLUMN_IS_DELETED + " = 0";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                totalBalance = cursor.getDouble(0); // Lấy giá trị tổng balance từ kết quả truy vấn
+            }
+            cursor.close();
+        }
+        db.close();
+        return totalBalance;
+    }
+
+    // Lấy tất cả danh mục chi chưa bị xóa
+    public List<Category> getAllExpenseCategories_NonDeleted() {
         List<Category> categoryList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_CATEGORY + " WHERE " + COLUMN_CATEGORY_IS_DELETED + " = 0";  // Only non-deleted categories
+
+        String selectQuery = "SELECT * FROM " + TABLE_CATEGORY +
+                " WHERE " + COLUMN_CATEGORY_IS_DELETED + " = 0" +
+                " AND " + COLUMN_CATEGORY_TYPE + " = 'Chi'";
+
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         if (cursor.moveToFirst()) {
@@ -290,9 +319,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 categoryList.add(category);
             } while (cursor.moveToNext());
         }
+
         cursor.close();
         return categoryList;
     }
+
     //Lấy tất cả ngân sách
     public List<Budget> getAllBudgets(int userId) {
         List<Budget> budgetList = new ArrayList<>();
@@ -325,6 +356,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return budgetList;
     }
+    //Lấy 2 ngân sách theo Id để hiển thị lên trang chủ
+    public List<Budget> getAllBudgets_limit(int userId) {
+        List<Budget> budgetList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Truy vấn 2 dòng đầu tiên của ngân sách cho người dùng
+        String query = "SELECT * FROM " + TABLE_BUDGET + " WHERE " + COLUMN_USER_ID + " = ? LIMIT 2";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        // Duyệt qua các bản ghi và tạo đối tượng Budget
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int budgetId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BUDGET_ID));
+                String budgetName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BUDGET_NAME));
+                double amountLimit = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_AMOUNT_LIMIT));
+                double amountSpent = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_AMOUNT_SPENT));
+                String startDate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_DATE));
+                String endDate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_END_DATE));
+                int categoryId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID));
+
+                // Tạo đối tượng Budget và thêm vào danh sách
+                Budget budget = new Budget(budgetId, budgetName, amountLimit, amountSpent, startDate, endDate, categoryId);
+                budgetList.add(budget);
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return budgetList;
+    }
+
     // Xóa ngân sách với ID đã cho
     public boolean deleteBudget(int budgetId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -334,13 +398,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Thêm dữ liệu vào bảng Ngân Sách
-    public long insertBudget(int userId, int categoryId, int accountId, String budgetName, double amountLimit, String startDate, String endDate) {
+    public long insertBudget(int userId, int categoryId, String budgetName, double amountLimit, String startDate, String endDate) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put("user_id", userId);
         values.put("category_id", categoryId);
-        values.put("account_id", accountId);
         values.put("budget_name", budgetName);
         values.put("amount_limit", amountLimit);
         values.put("amount_spent", 0);
@@ -385,7 +448,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query, new Object[]{amount, categoryId});
         db.close();
     }
-
     public boolean insertCategory(String name, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
