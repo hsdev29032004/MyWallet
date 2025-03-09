@@ -127,6 +127,7 @@ public class Transaction extends AppCompatActivity {
         int selectedCategoryId = db.getCategoryIdByName(selectedCategoryName);
         Log.d("Transaction", "Selected Account: " + selectedAccountName + ", Account ID: " + selectedAccountId);
         Log.d("Transaction", "Selected Category: " + selectedCategoryName + ", Category ID: " + selectedCategoryId);
+
         if (dueDateStr != null && !dueDateStr.isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             try {
@@ -139,13 +140,11 @@ public class Transaction extends AppCompatActivity {
                 calDue.set(Calendar.SECOND, 0);
                 calDue.set(Calendar.MILLISECOND, 0);
 
-
                 Calendar calToday = Calendar.getInstance();
                 calToday.set(Calendar.HOUR_OF_DAY, 0);
                 calToday.set(Calendar.MINUTE, 0);
                 calToday.set(Calendar.SECOND, 0);
                 calToday.set(Calendar.MILLISECOND, 0);
-
 
                 if (calDue.before(calToday)) {
                     Toast.makeText(this, "Ngày đến hạn phải sau ngày hiện tại!", Toast.LENGTH_SHORT).show();
@@ -157,7 +156,6 @@ public class Transaction extends AppCompatActivity {
             }
         }
 
-
         // Kiểm tra nếu user nhập số tiền hợp lệ
         double amount = 0;
         try {
@@ -166,6 +164,7 @@ public class Transaction extends AppCompatActivity {
             Toast.makeText(this, "Số tiền không hợp lệ!", Toast.LENGTH_SHORT).show();
             return;
         }
+
         // Kiểm tra loại danh mục
         String categoryType = db.getCategoryTypeById(selectedCategoryId);
         if (categoryType.equals("Chi")) { // Chỉ kiểm tra ngân sách nếu là chi tiêu
@@ -176,22 +175,26 @@ public class Transaction extends AppCompatActivity {
             }
         }
 
-
         String note = edtNote.getText().toString().isEmpty() ? "Không có ghi chú" : edtNote.getText().toString();
         String dueDate = edtDueDate.getVisibility() == View.VISIBLE ? edtDueDate.getText().toString() : null;
-
-
-        // Kiểm tra số tiền không vượt ngân sách
-
-
-
-
-
-
 
         // Thêm vào database
         boolean success = db.insertTransaction(userId, selectedAccountId, selectedCategoryId, amount, dueDate, note);
         if (success) {
+            // Cập nhật số tiền trong tài khoản
+            double currentBalance = db.getAccountBalance(selectedAccountId);
+            double newBalance = currentBalance;
+
+            // Kiểm tra loại giao dịch để cộng hay trừ số tiền
+            if (categoryType.equals("Chi")) {
+                newBalance -= amount; // Giảm số tiền nếu là giao dịch chi
+            } else if (categoryType.equals("Thu")) {
+                newBalance += amount; // Tăng số tiền nếu là giao dịch thu
+            }
+
+            // Cập nhật số tiền mới vào tài khoản
+            db.updateAccountBalance(selectedAccountId, newBalance);
+
             Toast.makeText(this, "Giao dịch đã được thêm!", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, MainActivity.class); // Hoặc màn hình bạn muốn
             startActivity(intent);
@@ -199,9 +202,8 @@ public class Transaction extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Lỗi khi thêm giao dịch!", Toast.LENGTH_SHORT).show();
         }
-
-
     }
+
     private void showDatePicker() {
         // Lấy ngày hiện tại làm mặc định
         final Calendar calendar = Calendar.getInstance();

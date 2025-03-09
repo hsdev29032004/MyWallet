@@ -184,6 +184,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGET);
         onCreate(db);
     }
+
+    public boolean updateAccountBalance(int accountId, double newBalance) {
+        SQLiteDatabase db = this.getWritableDatabase(); // Mở cơ sở dữ liệu ở chế độ ghi
+        ContentValues values = new ContentValues();
+        values.put("balance", newBalance); // Cập nhật giá trị số dư mới
+
+        // Điều kiện để tìm bản ghi cần cập nhật
+        String whereClause = "account_id = ?";
+        String[] whereArgs = {String.valueOf(accountId)};
+
+        // Thực hiện cập nhật
+        int rowsAffected = db.update("Account", values, whereClause, whereArgs);
+
+        // Kiểm tra xem có bản ghi nào bị ảnh hưởng không (có nghĩa là cập nhật thành công)
+        db.close();
+        return rowsAffected > 0;
+    }
+
+    public double getAccountBalance(int accountId) {
+        SQLiteDatabase db = this.getReadableDatabase(); // Mở cơ sở dữ liệu ở chế độ đọc
+        double balance = 0;
+
+        // Câu truy vấn SQL để lấy số dư của tài khoản
+        String query = "SELECT balance FROM " + TABLE_ACCOUNT + " WHERE " + COLUMN_ACCOUNT_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(accountId)});
+
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    int balanceColumnIndex = cursor.getColumnIndex(COLUMN_BALANCE); // Lấy chỉ số cột của balance
+                    if (balanceColumnIndex != -1) {
+                        // Lấy số dư từ cột "balance" trong kết quả truy vấn
+                        balance = cursor.getDouble(balanceColumnIndex);
+                    } else {
+                        Log.e("DatabaseHelper", "Column 'balance' not found in the query result.");
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("DatabaseHelper", "Error while getting account balance: " + e.getMessage());
+            } finally {
+                cursor.close(); // Đảm bảo đóng cursor
+            }
+        }
+
+        db.close(); // Đóng cơ sở dữ liệu sau khi truy vấn
+        return balance;
+    }
+
+
+
     public boolean registerUser(String email, String password){
         SQLiteDatabase db=this.getWritableDatabase();
         ContentValues values=new ContentValues();
