@@ -36,10 +36,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-//        Intent myintent = new Intent(MainActivity.this, CategoryActivity.class);
-//        startActivity(myintent);
+        Intent myintent = new Intent(MainActivity.this, CategoryActivity.class);
+        startActivity(myintent);
 
-        // Mặc định hiển thị HomeFragment khi mở app
+       /* // Mặc định hiển thị HomeFragment khi mở app
         loadFragment(new HomeFragment());
 
         // Xử lý sự kiện click cho BottomNavigation
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
             return true;
-        });
+        });*/
     }
 
     // Hàm load Fragment vào container
