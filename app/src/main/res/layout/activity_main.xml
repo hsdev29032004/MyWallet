@@ -1,4 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,17 +9,44 @@
     tools:context=".Activities.MainActivity"
     android:id="@+id/main">
 
+    <!-- Tiêu đề -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quản lý tài chính cá nhân"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="#1565C0"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:padding="10dp" />
+
+    <!-- Fragment Container -->
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
+    <!-- Thêm giao dịch (ImageView) không chiếm diện tích của Fragment -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="59dp"
+            android:layout_height="57dp"
+            android:layout_gravity="start"
+            android:contentDescription="Thêm giao dịch"
+            app:srcCompat="@drawable/add" />
+    </FrameLayout>
+
+    <!-- Thanh điều hướng -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
         android:background="#2196F3"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />

@@ -122,9 +122,9 @@ public class IncomeFragment extends Fragment {
         dataSet.setValueTextSize(14f);
 
         PieData pieData = new PieData(dataSet);
+
         pieChartIncome.setData(pieData);
         pieChartIncome.setCenterText("Thu nhập theo danh mục");
         pieChartIncome.animateY(1000);
-        pieChartIncome.invalidate();
     }
 }

@@ -1,0 +1,94 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".Activities.TransactionPackage.EditTransaction"
+    android:id="@+id/main"
+    android:background="#CCFFFF">
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+
+            android:padding="16dp"
+            android:background="@drawable/boder">
+
+
+            <!-- Spinner chọn tài khoản -->
+            <Spinner
+                android:id="@+id/spinnerAccount"
+                android:layout_width="match_parent"
+                android:layout_height="48dp" />
+
+            <!-- Spinner chọn danh mục -->
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="48dp" />
+
+            <!-- Nhập số tiền giao dịch -->
+            <EditText
+                android:id="@+id/edtAmount"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Nhập số tiền"
+                android:inputType="numberDecimal" />
+
+            <!-- Chọn ngày (mặc định ngày hiện tại) -->
+            <TextView
+                android:id="@+id/txtDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ngày: "
+                android:padding="8dp" />
+
+            <!-- Nhập ngày đến hạn (chỉ hiển thị nếu danh mục là Khoản cho vay/Khoản vay) -->
+            <EditText
+                android:id="@+id/edtDueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ngày đến hạn"
+                android:visibility="gone" />
+
+            <!-- Nhập ghi chú -->
+            <EditText
+                android:id="@+id/edtNote"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Ghi chú (Không bắt buộc)" />
+
+            <!-- Nút tạo giao dịch -->
+            <Button
+                android:id="@+id/btnAddTransaction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lưu thông tin sửa giao dịch" />
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

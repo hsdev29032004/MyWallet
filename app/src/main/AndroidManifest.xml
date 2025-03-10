@@ -13,11 +13,22 @@
         android:theme="@style/Theme.MyWallet"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.IntroduceActivity"
+            android:name=".Activities.TransactionPackage.EditTransaction"
             android:exported="false" />
         <activity
-            android:name=".Activities.Category.AddCategoryActivity"
+            android:name=".Activities.TransactionPackage.Transaction"
             android:exported="false" />
+        <activity
+            android:name=".Activities.IntroduceActivity"
+            android:exported="false" />
+        <!--
+<activity
+            android:name=".Activities.Fragments.EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Category.EditCategoryActivity"
+            android:exported="false" />
+        -->
         <activity
             android:name=".Activities.Budget.BudgetActivity"
             android:exported="false" />

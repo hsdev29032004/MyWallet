@@ -24,6 +24,7 @@ public class HistoryFragment extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
         ViewPager2 viewPager = view.findViewById(R.id.viewPager);
 
+
         if (getActivity() != null) {
             HistoryAdapter adapter = new HistoryAdapter(getActivity());
             viewPager.setAdapter(adapter);
