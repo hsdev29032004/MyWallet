@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -50,11 +51,20 @@ public class TransactionAdapter extends BaseAdapter {
         TextView tvAmount = convertView.findViewById(R.id.tvAmount);
         TextView tvDate = convertView.findViewById(R.id.tvDate);
         TextView tvNote = convertView.findViewById(R.id.tvNote);
+        ImageButton btnDelete = convertView.findViewById(R.id.btnDelete);
+
+
 
         tvCategory.setText(transaction.getCategoryName());
         tvAmount.setText(String.format("%,.2f VNĐ", transaction.getAmount()));
         tvDate.setText(transaction.getDate());
         tvNote.setText(transaction.getNote());
+
+        // Xử lý sự kiện khi nhấn nút xóa
+        // btnDelete.setOnClickListener(v -> {
+            //transactions.remove(position); // Xóa giao dịch khỏi danh sách
+            // notifyDataSetChanged(); // Cập nhật lại giao diện
+        //});
 
         return convertView;
     }

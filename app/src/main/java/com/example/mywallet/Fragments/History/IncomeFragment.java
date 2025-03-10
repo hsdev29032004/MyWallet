@@ -1,6 +1,9 @@
 package com.example.mywallet.Fragments.History;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,11 +13,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.Models.Transaction;
@@ -91,15 +98,127 @@ public class IncomeFragment extends Fragment {
             TextView tvAmount = itemView.findViewById(R.id.tvAmount);
             TextView tvNote = itemView.findViewById(R.id.tvNote);
             TextView tvDate = itemView.findViewById(R.id.tvDate);
+            ImageButton btnDelete = itemView.findViewById(R.id.btnDelete); // Nút xóa
+            ImageButton btnEdit = itemView.findViewById(R.id.btnEdit);
 
             tvCategory.setText(transaction.getCategoryName());
             tvAmount.setText(String.valueOf(transaction.getAmount()));
             tvNote.setText(transaction.getNote());
             tvDate.setText(transaction.getDate());
 
+            // Xử lý sự kiện khi nhấn nút xóa
+            btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog(transaction.getTransactionId(), startDate, endDate));
+            // Xử lý sự kiện sửa
+            btnEdit.setOnClickListener(v -> {
+                showEditTransactionDialog(transaction, startDate, endDate);
+            });
+
+
             layoutIncomeHistory.addView(itemView);
         }
         loadIncomeChart(incomeTransactions);
+        // Cập nhật UI ngay trên main thread
+        getActivity().runOnUiThread(() -> layoutIncomeHistory.invalidate());
+    }
+    private void showEditTransactionDialog(Transaction transaction, String startDate, String endDate) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Chỉnh sửa giao dịch");
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_edit_transaction, null);
+        EditText edtAmount = view.findViewById(R.id.edtAmount);
+        EditText edtNote = view.findViewById(R.id.edtNote);
+        EditText edtDate = view.findViewById(R.id.edtDate);
+        Spinner spnCategory = view.findViewById(R.id.spnCategory);
+
+        edtAmount.setText(String.valueOf(transaction.getAmount()));
+        edtNote.setText(transaction.getNote());
+        edtDate.setText(transaction.getDate());
+
+        // Lấy danh sách danh mục từ database
+        Map<String, Integer> categoriesMap = dbHelper.getAllCategoriesWithIds();
+        List<String> categoryNames = new ArrayList<>(categoriesMap.keySet());
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, categoryNames);
+        spnCategory.setAdapter(adapter);
+
+        // Chọn danh mục hiện tại
+        int categoryIndex = categoryNames.indexOf(transaction.getCategoryName());
+        if (categoryIndex != -1) {
+            spnCategory.setSelection(categoryIndex);
+        }
+
+        builder.setView(view);
+        builder.setPositiveButton("Lưu", (dialog, which) -> {
+            try {
+                double newAmount = Double.parseDouble(edtAmount.getText().toString());
+                String newNote = edtNote.getText().toString();
+                String selectedCategory = spnCategory.getSelectedItem().toString();
+                int categoryId = categoriesMap.get(selectedCategory); // Lấy ID danh mục
+
+                // Cập nhật vào database và kiểm tra kết quả
+                boolean isUpdated = dbHelper.updateTransaction(transaction.getTransactionId(), newAmount, newNote, categoryId);
+
+                if (isUpdated) {
+                    // Nếu sửa thành công, cập nhật ngay trên giao diện
+                    transaction.setAmount(newAmount);
+                    transaction.setNote(newNote);
+                    transaction.setCategoryName(selectedCategory);
+
+                    // Cập nhật lại mục giao dịch trong layout
+                    updateTransactionView(transaction);
+
+                    // Hiển thị thông báo thành công
+                    Toast.makeText(getContext(), "Cập nhật giao dịch thành công", Toast.LENGTH_SHORT).show();
+
+                    // Làm mới lại danh sách giao dịch (cập nhật UI)
+                    loadIncomeTransactions("", "");
+                } else {
+                    // Nếu có lỗi xảy ra, thông báo lỗi
+                    Toast.makeText(getContext(), "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                // Bắt lỗi nếu có và hiển thị thông báo
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Đã xảy ra lỗi, vui lòng thử lại", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+    private void updateTransactionView(Transaction transaction) {
+        for (int i = 0; i < layoutIncomeHistory.getChildCount(); i++) {
+            View itemView = layoutIncomeHistory.getChildAt(i);
+            TextView tvCategory = itemView.findViewById(R.id.tvCategory);
+            TextView tvAmount = itemView.findViewById(R.id.tvAmount);
+            TextView tvNote = itemView.findViewById(R.id.tvNote);
+
+            // Kiểm tra nếu đây là giao dịch đang sửa và cập nhật lại
+            if (tvCategory.getText().toString().equals(transaction.getCategoryName()) &&
+                    tvAmount.getText().toString().equals(String.valueOf(transaction.getAmount())) &&
+                    transaction.getTransactionId() == Integer.parseInt(tvCategory.getTag().toString())) {
+                tvCategory.setText(transaction.getCategoryName());
+                tvAmount.setText(String.valueOf(transaction.getAmount()));
+                tvNote.setText(transaction.getNote());
+                break;
+            }
+        }
+    }
+
+
+    private void showDeleteConfirmationDialog(int transactionId, String startDate, String endDate) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc chắn muốn xóa giao dịch này không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    dbHelper.deleteTransaction(transactionId);
+                    loadIncomeTransactions(startDate, endDate); // Cập nhật danh sách
+                })
+                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                .show();
     }
 
     private void loadIncomeChart(List<Transaction> transactions) {

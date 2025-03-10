@@ -20,13 +20,15 @@ import com.github.mikephil.charting.data.PieEntry;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "finance_manager.db";
-    public static final int DATABASE_VERSION = 17;
+    public static final int DATABASE_VERSION = 19;
 
 
     // Bảng User
@@ -1065,6 +1067,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return categoryType;
     }
+    public boolean updateTransaction(int transactionId, double newAmount, String newNote, int categoryId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("amount", newAmount);
+        values.put("note", newNote);
+        values.put("category_id", categoryId); // Nếu bạn lưu ID danh mục thay vì tên
+
+        // Cập nhật giao dịch trong cơ sở dữ liệu
+        int rowsUpdated = db.update("Transactions", values, "transaction_id = ?", new String[]{String.valueOf(transactionId)});
+        db.close();
+
+        // Trả về true nếu có ít nhất một dòng bị ảnh hưởng (tức là cập nhật thành công)
+        return rowsUpdated > 0;
+    }
+
+    public Map<String, Integer> getAllCategoriesWithIds() {
+        Map<String, Integer> categoriesMap = new HashMap<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT category_id, name FROM Category", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                categoriesMap.put(name, id);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return categoriesMap;
+    }
+
+
+
 
 
 }
