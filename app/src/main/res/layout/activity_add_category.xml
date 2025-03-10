@@ -7,14 +7,24 @@
     android:layout_height="match_parent"
     tools:context=".Activities.Category.AddCategoryActivity">
 
-    <ImageButton
-        android:id="@+id/btnBackToCategory"
+    <TextView
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Quay lại"
+        android:textColor="#1F96F3"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/btnBackToCategory"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnBackToCategory"
+        android:layout_width="30dp"
+        android:layout_height="27dp"
+        android:background="@null"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_arrow_back_24"
-        android:background="@null"/>
+        app:srcCompat="@drawable/baseline_arrow_back_24" />
 
     <EditText
         android:id="@+id/edtCategory"
