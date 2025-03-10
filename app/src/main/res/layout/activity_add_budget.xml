@@ -105,7 +105,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="12dp">
+            android:padding="18dp">
 
             <ImageView
                 android:layout_width="24dp"
@@ -135,7 +135,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="12dp">
+            android:padding="18dp">
 
             <ImageView
                 android:layout_width="24dp"
@@ -164,48 +164,13 @@
             android:layout_marginLeft="57dp"
             android:background="@android:color/darker_gray" />
 
-        <!-- Tài khoản -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/baseline_account_balance_wallet_24" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:text="Tài khoản"
-                android:textSize="16sp" />
-
-            <Spinner
-                android:id="@+id/spAccount"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:paddingVertical="5dp"
-                android:layout_marginLeft="27dp"
-                android:layout_weight="1"
-                android:paddingStart="16dp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="352dp"
-            android:layout_height="1dp"
-            android:layout_marginLeft="57dp"
-            android:background="@android:color/darker_gray" />
         <!-- Ngày bắt đầu -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="18dp">
 
             <ImageView
                 android:layout_width="24dp"
@@ -244,7 +209,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="18dp">
 
             <ImageView
                 android:layout_width="24dp"
