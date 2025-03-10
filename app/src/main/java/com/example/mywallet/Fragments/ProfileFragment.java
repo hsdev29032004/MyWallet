@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.example.mywallet.Activities.Budget.BudgetActivity;
+import com.example.mywallet.Activities.Category.CategoryActivity;
 import com.example.mywallet.Activities.IntroduceActivity;
 import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.R;
@@ -25,7 +26,7 @@ public class ProfileFragment extends Fragment {
 
     TextView txtTongTien;
     private DatabaseHelper dbHelper;
-    Button btnGioiThieu, btnViewBudget;
+    Button btnGioiThieu, btnViewBudget, btnViewCategory;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,8 +37,10 @@ public class ProfileFragment extends Fragment {
 
         btnGioiThieu = view.findViewById(R.id.btnGioiThieu);
         btnViewBudget = view.findViewById(R.id.btnViewBudget);
+        btnViewCategory = view.findViewById(R.id.btnViewCategory);
         txtTongTien = view.findViewById(R.id.txtTongTien);
         dbHelper = new DatabaseHelper(getContext());
+
 
 
 
@@ -53,6 +56,14 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), IntroduceActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnViewCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CategoryActivity.class);
                 startActivity(intent);
             }
         });
