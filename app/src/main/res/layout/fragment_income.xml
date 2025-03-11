@@ -1,5 +1,6 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -41,13 +42,31 @@
             android:focusable="false"
             android:padding="10dp"/>
 
-        <Button
-            android:id="@+id/btnSearch"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layout2"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:padding="10dp"
-            android:text="Tìm kiếm" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSearch"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="10dp"
+                android:text="Tìm kiếm"
+                app:cornerRadius="@null"
+                android:backgroundTint="@color/background_color"/>
+
+            <Button
+                android:id="@+id/btnExportPDF"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="16dp"
+                android:text=" Xuất PDF"
+                android:backgroundTint="@color/background_color"/>
+        </LinearLayout>
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pieChartIncome"
