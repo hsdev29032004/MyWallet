@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import com.example.mywallet.R;
 public class EditAccountActivity extends AppCompatActivity {
     private EditText edtAccountName, edtBalance;
     private Button btnSaveAccount;
+    private ImageButton btnClose;
     private DatabaseHelper dbHelper;
     private int accountId;
 
@@ -26,6 +28,7 @@ public class EditAccountActivity extends AppCompatActivity {
         edtAccountName = findViewById(R.id.edtAccountName);
         edtBalance = findViewById(R.id.edtBalance);
         btnSaveAccount = findViewById(R.id.btnSaveAccount);
+        btnClose = findViewById(R.id.btnClose);
         dbHelper = new DatabaseHelper(this);
 
         // Nhận dữ liệu từ Intent
@@ -43,6 +46,7 @@ public class EditAccountActivity extends AppCompatActivity {
         }
 
         btnSaveAccount.setOnClickListener(v -> saveAccountChanges());
+        btnClose.setOnClickListener(v -> finish());
     }
 
     private void saveAccountChanges() {
