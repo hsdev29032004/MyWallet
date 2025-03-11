@@ -28,7 +28,9 @@ public class CategoryActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private ListView lvCategoryThu, lvCategoryChi;
     private CategoryAdapter adapterThu, adapterChi;
-    private ImageButton btnBackToTransaction, btnAddCategory, btnDeleteCategory, btnEditCategory;
+    private ImageButton btnBackToTransaction, btnAddCategory;
+    private boolean isFromTransaction = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +49,14 @@ public class CategoryActivity extends AppCompatActivity {
         tabCategory = findViewById(R.id.tabCategory);
         btnBackToTransaction = findViewById(R.id.btnBackToTransaction);
         btnAddCategory = findViewById(R.id.btnAddCategory);
-        btnDeleteCategory = findViewById(R.id.btnDeleteCategory);
-        btnEditCategory = findViewById(R.id.btnEditCategory);
 
         //Lấy dữ liệu ra khỏi csdl
         dbHelper = new DatabaseHelper(this);
 
+        Intent myIntent = getIntent();
+        if (myIntent.hasExtra("isFromTransaction")) {
+            isFromTransaction = myIntent.getBooleanExtra("isFromTransaction", false);
+        }
 
         //Hiển thị dữ liệu và
         loadCategories();
@@ -65,19 +69,14 @@ public class CategoryActivity extends AppCompatActivity {
         btnBackToTransaction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 finish();//Đóng activity này trở về activity trước đó
             }
         });
 
-        btnAddCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-                startActivity(intent);
-            }
+        btnAddCategory.setOnClickListener(v -> {
+            Intent intent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
+            startActivityForResult(intent, 1); // Sử dụng startActivityForResult để nhận kết quả
         });
-
 
 
     }
@@ -116,9 +115,6 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
 
-
-
-
     // Hàm xử lý logic khi chọn một danh mục
     private void handleCategorySelection(CategoryAdapter adapter, int position) {
         Category selectedCategory = adapter.getItem(position);
@@ -129,16 +125,23 @@ public class CategoryActivity extends AppCompatActivity {
             resultIntent.putExtra("category_type", selectedCategory.getType());
 
             setResult(RESULT_OK, resultIntent);
-             finish(); // Đóng Activity sau khi chọn danh mục
+            // Nếu mở từ TransactionActivity thì đóng Activity
+            if (isFromTransaction) {
+                finish();
+            }
         }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            loadCategories(); // Load lại danh mục sau khi cập nhật
+        if (resultCode == RESULT_OK && data != null) {
+            boolean isUpdated = data.getBooleanExtra("is_updated", false);
+            if (isUpdated) {
+                loadCategories(); // Cập nhật lại danh sách danh mục
+            }
         }
     }
+
 
 
 }
