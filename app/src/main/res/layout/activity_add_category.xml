@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_gravity="center"
-        android:background="#0075E7"
+        android:background="@color/blue_background"
         android:gravity="center"
         android:padding="10dp">
 
@@ -75,7 +75,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginRight="16dp"
         android:text="Lưu"
-        android:backgroundTint="@color/background_color"
+        android:backgroundTint="@color/button_background"
         app:cornerRadius="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

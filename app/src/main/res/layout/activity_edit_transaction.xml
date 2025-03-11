@@ -82,7 +82,8 @@
                 android:id="@+id/btnAddTransaction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Lưu thông tin sửa giao dịch" />
+                android:text="Lưu thông tin sửa giao dịch"
+                android:backgroundTint="@color/button_background"/>
         </LinearLayout>
 
 

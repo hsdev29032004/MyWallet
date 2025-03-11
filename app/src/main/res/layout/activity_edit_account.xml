@@ -12,13 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_gravity="center"
-        android:background="#0075E7"
+        android:background="@color/blue_background"
         android:gravity="center"
         android:padding="10dp">
 
         <!-- Nút Đóng (btnClose) -->
         <ImageButton
-            android:id="@+id/btnClose"
+            android:id="@+id/btnBackToProfile"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Lưu thay đổi"
-        android:backgroundTint="@color/background_color"
+        android:backgroundTint="@color/button_background"
         app:cornerRadius="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

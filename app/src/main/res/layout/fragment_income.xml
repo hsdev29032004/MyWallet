@@ -56,7 +56,7 @@
                 android:padding="10dp"
                 android:text="Tìm kiếm"
                 app:cornerRadius="@null"
-                android:backgroundTint="@color/background_color"/>
+                android:backgroundTint="@color/button_background"/>
 
             <Button
                 android:id="@+id/btnExportPDF"
@@ -65,7 +65,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="16dp"
                 android:text=" Xuất PDF"
-                android:backgroundTint="@color/background_color"/>
+                android:backgroundTint="@color/button_background"/>
         </LinearLayout>
 
         <com.github.mikephil.charting.charts.PieChart

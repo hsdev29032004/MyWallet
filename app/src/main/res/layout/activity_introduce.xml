@@ -7,42 +7,54 @@
     android:layout_height="match_parent"
     tools:context=".Activities.IntroduceActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar8"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:background="@color/blue_background"
+        android:gravity="center"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Nút Đóng (btnClose) -->
         <ImageButton
             android:id="@+id/btnBackToProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/baseline_arrow_back_24"
-            android:background="@null"/>
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Đóng màn hình"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:src="@drawable/ic_back" />
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="Quay lại"
-            android:textColor="#1F96F3"
-            android:textSize="20sp" />
+            android:gravity="center"
+            android:text="Giới thiệu"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="158dp"
+            tools:layout_editor_absoluteY="21dp" />
 
-    </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="138dp"
         android:layout_height="112dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar8"
         app:srcCompat="@drawable/baseline_account_balance_wallet_24" />
 
     <TextView

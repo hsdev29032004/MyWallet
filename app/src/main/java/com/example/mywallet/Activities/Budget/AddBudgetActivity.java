@@ -19,7 +19,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.mywallet.Database.DatabaseHelper;
-import com.example.mywallet.Models.Account;
 import com.example.mywallet.Models.Category;
 import com.example.mywallet.R;
 
@@ -113,7 +112,7 @@ public class AddBudgetActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(v -> addBudget());
     }
     public void getView(){
-        btnClose = findViewById(R.id.btnClose);
+        btnClose = findViewById(R.id.btnBackToProfile);
         btnCheck = findViewById(R.id.btnSave);
         edtAmount = findViewById(R.id.edtAmount);
         edBudgetName = findViewById(R.id.edBudgetName);

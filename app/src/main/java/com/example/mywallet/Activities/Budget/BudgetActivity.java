@@ -36,7 +36,7 @@ public class BudgetActivity extends AppCompatActivity implements BudgetActionLis
         setContentView(R.layout.activity_budget);
 
         btnAddBudget = findViewById(R.id.btnAddBudget);
-        btnClose = findViewById(R.id.btnClose);
+        btnClose = findViewById(R.id.btnBackToProfile);
         btnAddBudget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

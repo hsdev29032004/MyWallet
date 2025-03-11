@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -60,7 +58,7 @@ public class Transaction extends AppCompatActivity {
         edtDueDate = findViewById(R.id.edtDueDate);
         edtNote = findViewById(R.id.edtNote);
         btnAddTransaction = findViewById(R.id.btnAddTransaction);
-        btnClose = findViewById(R.id.btnClose);
+        btnClose = findViewById(R.id.btnBackToProfile);
         txtSelectedCategory = findViewById(R.id.txtSelectedCategory);
         db = new DatabaseHelper(this);
 

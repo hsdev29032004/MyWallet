@@ -13,13 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_gravity="center"
-        android:background="#0075E7"
+        android:background="@color/blue_background"
         android:gravity="center"
         android:padding="10dp">
 
         <!-- Nút Đóng (btnClose) -->
         <ImageButton
-            android:id="@+id/btnClose"
+            android:id="@+id/btnBackToProfile"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:minWidth="48dp"

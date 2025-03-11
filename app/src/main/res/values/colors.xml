@@ -3,11 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#0075E7</color>
-    <color name="stringee_color">#F5C50A0A</color>
-    <color name="stringee_background_color">#2196F3</color>
-    <color name="stringee_start_color">#2196F3</color>
-    <color name="stringee_center_color">#673AB7</color>
-    <color name="stringee_end_color">#FF5722</color>
     <color name="gray">#E2E2E2</color>
-    <color name="background_color">#1F96F3</color>
+    <color name="blue_background">#0a5599</color>
+    <color name="gray_background">#f0f0f0</color>
+    <color name="button_background">#0075e7</color>
 </resources>

@@ -20,7 +20,7 @@
 
         <!-- Nút Đóng (btnClose) -->
         <ImageButton
-            android:id="@+id/btnClose"
+            android:id="@+id/btnBackToProfile"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"

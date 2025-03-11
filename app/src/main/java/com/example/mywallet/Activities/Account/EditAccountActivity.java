@@ -28,7 +28,7 @@ public class EditAccountActivity extends AppCompatActivity {
         edtAccountName = findViewById(R.id.edtAccountName);
         edtBalance = findViewById(R.id.edtBalance);
         btnSaveAccount = findViewById(R.id.btnSaveAccount);
-        btnClose = findViewById(R.id.btnClose);
+        btnClose = findViewById(R.id.btnBackToProfile);
         dbHelper = new DatabaseHelper(this);
 
         // Nhận dữ liệu từ Intent
