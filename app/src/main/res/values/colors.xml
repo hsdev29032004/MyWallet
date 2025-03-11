@@ -9,4 +9,5 @@
     <color name="stringee_center_color">#673AB7</color>
     <color name="stringee_end_color">#FF5722</color>
     <color name="gray">#E2E2E2</color>
+    <color name="background_color">#1F96F3</color>
 </resources>
