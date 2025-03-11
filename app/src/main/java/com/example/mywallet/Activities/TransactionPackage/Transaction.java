@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class Transaction extends AppCompatActivity {
     private EditText edtAmount, edtDueDate, edtNote;
     private TextView txtDate;
     private Button btnAddTransaction;
+    private ImageButton btnClose;
     private DatabaseHelper db;
     private int userId;
     private List<String> accountList;
@@ -54,6 +56,7 @@ public class Transaction extends AppCompatActivity {
         edtDueDate = findViewById(R.id.edtDueDate);
         edtNote = findViewById(R.id.edtNote);
         btnAddTransaction = findViewById(R.id.btnAddTransaction);
+        btnClose = findViewById(R.id.btnClose);
         db = new DatabaseHelper(this);
 
 
@@ -100,6 +103,8 @@ public class Transaction extends AppCompatActivity {
 
         // Xử lý khi nhấn nút tạo giao dịch
         btnAddTransaction.setOnClickListener(view -> saveTransaction());
+
+        btnClose.setOnClickListener(v -> finish());
     }
 
 

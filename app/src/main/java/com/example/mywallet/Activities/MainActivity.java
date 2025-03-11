@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"Tạo mới giao dịch",Toast.LENGTH_SHORT).show();
                 Intent intent=new Intent(MainActivity.this, Transaction.class);
                 startActivity(intent);
-                finish();
+//                finish();
             }
         });
 
