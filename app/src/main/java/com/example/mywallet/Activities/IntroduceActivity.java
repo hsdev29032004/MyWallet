@@ -15,7 +15,7 @@ import com.example.mywallet.R;
 
 public class IntroduceActivity extends AppCompatActivity {
 
-    ImageButton btnBack;
+    private ImageButton btnBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

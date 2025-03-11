@@ -51,8 +51,8 @@ public class CategoryAdapter extends ArrayAdapter<Category> {
 
         DatabaseHelper dbHelper = new DatabaseHelper(context);
 
-        // Nếu danh mục là "Cho vay", ẩn nút Sửa và Xóa
-        if ("Khoản cho vay".equals(category.getName())) {
+        // Nếu danh mục là vay, ẩn nút Sửa và Xóa
+        if ("Khoản cho vay".equals(category.getName()) || "Đi vay".equals(category.getName())) {
             btnDelete.setVisibility(View.GONE);
             btnEdit.setVisibility(View.GONE);
         } else {

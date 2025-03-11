@@ -67,10 +67,21 @@
                 android:layout_height="48dp" />
 
             <!-- Spinner chọn danh mục -->
-            <Spinner
-                android:id="@+id/spinnerCategory"
+            <TextView
+                android:id="@+id/txtSelectedCategory"
                 android:layout_width="match_parent"
-                android:layout_height="48dp" />
+                android:layout_height="48dp"
+                android:background="@android:drawable/editbox_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="left|center_vertical"
+                android:text="Chọn danh mục"
+                android:textSize="16sp" />
+
+<!--            <Spinner-->
+<!--                android:id="@+id/spinnerCategory"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="48dp" />-->
 
             <!-- Nhập số tiền giao dịch -->
             <EditText
