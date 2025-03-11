@@ -25,8 +25,10 @@ public class AddCategoryActivity extends AppCompatActivity {
     private ImageButton btnBackToCategory;
     private DatabaseHelper dbHelper;
 
+/*
     private int categoryId = -1;  // Mặc định là -1 (tức là thêm mới)
     private boolean isEditMode = false; // Xác định chế độ
+*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,9 @@ public class AddCategoryActivity extends AppCompatActivity {
         btnBackToCategory = findViewById(R.id.btnBackToCategory);
         dbHelper = new DatabaseHelper(this);
 
+        loadCategoryTypes(null);
+
+/*
         // Kiểm tra xem có dữ liệu từ Intent không (nếu có thì là chế độ chỉnh sửa)
         Intent intent = getIntent();
         if (intent.hasExtra("category_id")) {
@@ -55,12 +60,10 @@ public class AddCategoryActivity extends AppCompatActivity {
             loadCategoryTypes(null);
         }
 
+*/
+
         btnLuu.setOnClickListener(v -> {
-            if (isEditMode) {
-                updateCategory(); // Nếu đang chỉnh sửa thì cập nhật danh mục
-            } else {
-                addCategory(); // Nếu đang thêm mới thì thêm danh mục
-            }
+                addCategory();
         });
 
         btnBackToCategory.setOnClickListener(v -> finish());
@@ -79,13 +82,19 @@ public class AddCategoryActivity extends AppCompatActivity {
 
         if (success) {
             Toast.makeText(this, "Thêm danh mục thành công!", Toast.LENGTH_SHORT).show();
+
+            // Trả về kết quả
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("is_updated", true);
+            setResult(RESULT_OK, resultIntent);
+
             finish();
         } else {
             Toast.makeText(this, "Thêm danh mục thất bại!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void updateCategory() {
+   /* private void updateCategory() {
         String newName = edtCategory.getText().toString().trim();
         String newType = spnCategory.getSelectedItem().toString();
 
@@ -105,7 +114,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Lỗi khi cập nhật danh mục!", Toast.LENGTH_SHORT).show();
         }
-    }
+    }*/
 
 
     private void loadCategoryTypes(String selectedType) {

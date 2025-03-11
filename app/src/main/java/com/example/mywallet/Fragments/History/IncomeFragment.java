@@ -2,14 +2,25 @@ package com.example.mywallet.Fragments.History;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +43,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -40,11 +52,11 @@ import java.util.Map;
 
 public class IncomeFragment extends Fragment {
     private EditText edtStartDate, edtEndDate;
-    private Button btnSearch;
+    private Button btnSearch, btnExportPDF;
     private LinearLayout layoutIncomeHistory;
     private PieChart pieChartIncome;
     private DatabaseHelper dbHelper;
-
+    private boolean isSearchPerformed = false;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +65,7 @@ public class IncomeFragment extends Fragment {
         edtStartDate = view.findViewById(R.id.edtStartDate);
         edtEndDate = view.findViewById(R.id.edtEndDate);
         btnSearch = view.findViewById(R.id.btnSearch);
+        btnExportPDF = view.findViewById(R.id.btnExportPDF);
         layoutIncomeHistory = view.findViewById(R.id.layoutIncomeHistory);
         pieChartIncome = view.findViewById(R.id.pieChartIncome);
 
@@ -68,6 +81,16 @@ public class IncomeFragment extends Fragment {
             String endDate = edtEndDate.getText().toString();
             loadIncomeTransactions(startDate, endDate);
         });
+
+        btnExportPDF.setOnClickListener(v -> {
+            if (!isSearchPerformed) {
+                Toast.makeText(getContext(), "Không có giao dịch để xuất báo cáo!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            exportToPDF();
+        });
+
+
 
         return view;
     }
@@ -89,6 +112,13 @@ public class IncomeFragment extends Fragment {
     private void loadIncomeTransactions(String startDate, String endDate) {
         List<Transaction> incomeTransactions = dbHelper.getIncomeTransactions(startDate, endDate);
         layoutIncomeHistory.removeAllViews();
+        if (incomeTransactions.isEmpty()) {
+            Toast.makeText(getContext(), "Không tìm thấy giao dịch nào!", Toast.LENGTH_SHORT).show();
+            isSearchPerformed = false; // Vẫn chưa có dữ liệu hợp lệ để xuất PDF
+            return;
+        }
+
+        isSearchPerformed = true; // Đánh dấu đã tìm kiếm thành công
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (Transaction transaction : incomeTransactions) {
@@ -246,4 +276,111 @@ public class IncomeFragment extends Fragment {
         pieChartIncome.setCenterText("Thu nhập theo danh mục");
         pieChartIncome.animateY(1000);
     }
+
+    //CODE CHO XUẤT FILE PDF
+    public void exportToPDF() {
+        PdfDocument pdfDocument = new PdfDocument();
+        Paint paint = new Paint();
+        int pageWidth = 595; // Kích thước chuẩn A4
+        int pageHeight = 842;
+        int yPosition = 50;
+
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
+        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+        Canvas canvas = page.getCanvas();
+
+        // Tiêu đề báo cáo
+        paint.setTextSize(20);
+        canvas.drawText("Báo cáo tài chính cá nhân", 180, yPosition, paint);
+        yPosition += 40;
+
+        // Chụp ảnh biểu đồ PieChart
+        Bitmap bitmap = getChartBitmap(pieChartIncome);
+        if (bitmap != null) {
+            // Scale hình ảnh biểu đồ để vừa trang PDF
+            int scaledWidth = pageWidth - 100;
+            int scaledHeight = (int) ((float) bitmap.getHeight() / bitmap.getWidth() * scaledWidth);
+            canvas.drawBitmap(Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true), 50, yPosition, paint);
+            yPosition += scaledHeight + 20;
+        }
+
+        // Thêm lịch sử giao dịch
+        paint.setTextSize(16);
+        canvas.drawText("Lịch sử giao dịch:", 50, yPosition, paint);
+        yPosition += 30;
+
+        List<Transaction> transactions = dbHelper.getIncomeTransactions("", "");
+        for (Transaction transaction : transactions) {
+            if (yPosition > pageHeight - 50) {
+                pdfDocument.finishPage(page);
+                pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pdfDocument.getPages().size() + 1).create();
+                page = pdfDocument.startPage(pageInfo);
+                canvas = page.getCanvas();
+                yPosition = 50;
+            }
+            String transactionText = transaction.getDate() + " - " + transaction.getCategoryName() + ": " + transaction.getAmount();
+            canvas.drawText(transactionText, 50, yPosition, paint);
+            yPosition += 20;
+        }
+
+        pdfDocument.finishPage(page);
+
+        // Lưu PDF vào thư mục Download
+        ContentResolver contentResolver = getContext().getContentResolver();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "income_report.pdf");
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+        }
+
+        Uri uri = contentResolver.insert(MediaStore.Files.getContentUri("external"), contentValues);
+
+        try {
+            OutputStream outputStream = contentResolver.openOutputStream(uri);
+            pdfDocument.writeTo(outputStream);
+            pdfDocument.close();
+            outputStream.close();
+            openPDF(uri); // Mở file PDF sau khi lưu thành công
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //Chụp ảnh biểu đồ Pie Chart
+    public Bitmap getChartBitmap(PieChart chart) {
+        chart.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY));
+        chart.layout(0, 0, chart.getMeasuredWidth(), chart.getMeasuredHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(chart.getWidth(), chart.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        chart.draw(canvas);
+
+        return bitmap;
+    }
+
+    //Mở file sau khi lưu
+    public void openPDF(Uri uri) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, "application/pdf");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(intent);
+    }
+
+    //Cập nhật PieChart và đảm bảo nó hiển thị đúng, ko bị lệch
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (pieChartIncome != null) {
+            ViewGroup.LayoutParams params = pieChartIncome.getLayoutParams();
+            params.height = 900; // Đặt lại chiều cao ban đầu
+            pieChartIncome.setLayoutParams(params);
+            pieChartIncome.invalidate(); // Cập nhật lại PieChart
+        }
+    }
+
+
 }

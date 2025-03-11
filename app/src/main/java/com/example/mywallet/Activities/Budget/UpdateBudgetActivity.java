@@ -197,7 +197,7 @@ public class UpdateBudgetActivity extends AppCompatActivity {
 
     public void getViews() {
         btnSave = findViewById(R.id.btnSave);
-        btnClose = findViewById(R.id.btnClose);
+        btnClose = findViewById(R.id.btnBackToProfile);
         edtAmount = findViewById(R.id.edtAmount);
         edBudgetName = findViewById(R.id.edBudgetName);
         spCategory = findViewById(R.id.spCategory);

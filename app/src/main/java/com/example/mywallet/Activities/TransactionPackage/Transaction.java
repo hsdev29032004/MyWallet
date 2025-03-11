@@ -7,10 +7,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.example.mywallet.Activities.Category.CategoryActivity;
 import com.example.mywallet.Activities.MainActivity;
 import com.example.mywallet.Database.DatabaseHelper;
 import com.example.mywallet.R;
@@ -34,12 +35,15 @@ import java.util.Locale;
 public class Transaction extends AppCompatActivity {
     private Spinner spinnerAccount, spinnerCategory;
     private EditText edtAmount, edtDueDate, edtNote;
-    private TextView txtDate;
+    private TextView txtDate, txtSelectedCategory;
     private Button btnAddTransaction;
+    private ImageButton btnClose;
     private DatabaseHelper db;
-    private int userId;
+    private int userId, selectedCategoryId;
+    private String selectedCategoryName;
     private List<String> accountList;
     private List<String> categoryList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,12 +52,14 @@ public class Transaction extends AppCompatActivity {
 
         // Ánh xạ UI
         spinnerAccount = findViewById(R.id.spinnerAccount);
-        spinnerCategory = findViewById(R.id.spinnerCategory);
+//        spinnerCategory = findViewById(R.id.spinnerCategory);
         edtAmount = findViewById(R.id.edtAmount);
         txtDate = findViewById(R.id.txtDate);
         edtDueDate = findViewById(R.id.edtDueDate);
         edtNote = findViewById(R.id.edtNote);
         btnAddTransaction = findViewById(R.id.btnAddTransaction);
+        btnClose = findViewById(R.id.btnBackToProfile);
+        txtSelectedCategory = findViewById(R.id.txtSelectedCategory);
         db = new DatabaseHelper(this);
 
 
@@ -69,7 +75,7 @@ public class Transaction extends AppCompatActivity {
 
         // Hiển thị danh sách tài khoản & danh mục
         loadAccounts();
-        loadCategories();
+//        loadCategories();
 
 
         // Lấy ngày hiện tại
@@ -77,7 +83,7 @@ public class Transaction extends AppCompatActivity {
         txtDate.setText("Ngày: " + currentDate);
 
 
-        // Sự kiện chọn danh mục để hiển thị due_date nếu cần
+/*        // Sự kiện chọn danh mục để hiển thị due_date nếu cần
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -95,11 +101,18 @@ public class Transaction extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
-        });
+        });*/
 
 
         // Xử lý khi nhấn nút tạo giao dịch
         btnAddTransaction.setOnClickListener(view -> saveTransaction());
+
+//CODE MỚI
+        btnClose.setOnClickListener(v -> finish());
+
+        txtSelectedCategory.setOnClickListener(v -> openCategoryActivity());
+
+
     }
 
 
@@ -110,21 +123,21 @@ public class Transaction extends AppCompatActivity {
     }
 
 
-    private void loadCategories() {
+/*    private void loadCategories() {
         categoryList = db.getCategories(); // Danh sách tên danh mục
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categoryList);
         spinnerCategory.setAdapter(adapter);
-    }
+    }*/
 
 
     private void saveTransaction() {
         // Lấy tên tài khoản và danh mục, sau đó tìm account_id và category_id
         String selectedAccountName = accountList.get(spinnerAccount.getSelectedItemPosition());
-        String selectedCategoryName = categoryList.get(spinnerCategory.getSelectedItemPosition());
+//        String selectedCategoryName = categoryList.get(spinnerCategory.getSelectedItemPosition());
         String dueDateStr = edtDueDate.getVisibility() == View.VISIBLE ? edtDueDate.getText().toString() : null;
         // Tìm account_id và category_id tương ứng
         int selectedAccountId = db.getAccountIdByName(selectedAccountName);
-        int selectedCategoryId = db.getCategoryIdByName(selectedCategoryName);
+//        int selectedCategoryId = db.getCategoryIdByName(selectedCategoryName);
         Log.d("Transaction", "Selected Account: " + selectedAccountName + ", Account ID: " + selectedAccountId);
         Log.d("Transaction", "Selected Category: " + selectedCategoryName + ", Category ID: " + selectedCategoryId);
 
@@ -222,6 +235,56 @@ public class Transaction extends AppCompatActivity {
 
         datePickerDialog.show();
     }
+
+
+
+//CÁC HÀM ĐƯỢC THÊM MỚI ĐỂ MỞ CATEGORY ACTIVITY
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            if (data != null) {
+                int categoryId = data.getIntExtra("category_id", -1);
+                String categoryName = data.getStringExtra("category_name");
+                String categoryType = data.getStringExtra("category_type");
+
+                // Hiển thị tên danh mục lên TextView
+                txtSelectedCategory.setText(categoryName + " - " + categoryType);
+
+                // Lưu categoryId và categoryName
+                selectedCategoryId = categoryId;
+                selectedCategoryName = categoryName;
+
+                // GỌI LẠI HÀM KIỂM TRA ĐỂ HIỂN THỊ DUE_DATE
+                checkCategoryAndShowDueDate(selectedCategoryName);
+            }
+        }
+    }
+
+
+    //Kiểm tra tên danh mục và hiển thị due_date
+    private void checkCategoryAndShowDueDate(String categoryName) {
+        if (categoryName == null) return;
+
+        if (categoryName.equals("Đi vay") || categoryName.equals("Khoản cho vay")) {
+            edtDueDate.setVisibility(View.VISIBLE);
+            edtDueDate.setOnClickListener(v -> showDatePicker());
+        } else {
+            edtDueDate.setVisibility(View.GONE);
+        }
+    }
+
+
+    private void openCategoryActivity() {
+        Intent intent = new Intent(Transaction.this, CategoryActivity.class);
+        intent.putExtra("isFromTransaction", true); // Truyền biến này để biết gọi từ TransactionActivity
+        startActivityForResult(intent, 1); // RequestCode = 1
+
+    }
+
+
+
 
 
 }

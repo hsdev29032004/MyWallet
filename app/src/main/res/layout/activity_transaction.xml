@@ -1,37 +1,63 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#CCFFFF"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".Activities.TransactionPackage.Transaction"
-    android:id="@+id/main"
-    android:background="#CCFFFF">
+    tools:context=".Activities.TransactionPackage.Transaction">
 
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar7"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:background="#0075E7"
+        android:gravity="center"
+        android:padding="10dp">
 
+        <!-- Nút Đóng (btnClose) -->
+        <ImageButton
+            android:id="@+id/btnBackToProfile"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Đóng màn hình"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Thêm giao dịch"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+    </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        >
-
-
-
-
+        android:orientation="vertical">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+
+
+            android:background="@drawable/boder"
             android:orientation="vertical"
-
-
-            android:padding="16dp"
-            android:background="@drawable/boder">
+            android:padding="16dp">
 
 
             <!-- Spinner chọn tài khoản -->
@@ -41,10 +67,21 @@
                 android:layout_height="48dp" />
 
             <!-- Spinner chọn danh mục -->
-            <Spinner
-                android:id="@+id/spinnerCategory"
+            <TextView
+                android:id="@+id/txtSelectedCategory"
                 android:layout_width="match_parent"
-                android:layout_height="48dp" />
+                android:layout_height="48dp"
+                android:background="@android:drawable/editbox_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="left|center_vertical"
+                android:text="Chọn danh mục"
+                android:textSize="16sp" />
+
+<!--            <Spinner-->
+<!--                android:id="@+id/spinnerCategory"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="48dp" />-->
 
             <!-- Nhập số tiền giao dịch -->
             <EditText
@@ -59,8 +96,8 @@
                 android:id="@+id/txtDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ngày: "
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:text="Ngày: " />
 
             <!-- Nhập ngày đến hạn (chỉ hiển thị nếu danh mục là Khoản cho vay/Khoản vay) -->
             <EditText
@@ -84,8 +121,6 @@
                 android:layout_height="wrap_content"
                 android:text="Tạo giao dịch" />
         </LinearLayout>
-
-
 
 
     </LinearLayout>
